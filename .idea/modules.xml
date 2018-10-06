@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pretty-box-formatter.iml" filepath="$PROJECT_DIR$/.idea/modules/pretty-box-formatter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pretty-box-formatter_main.iml" filepath="$PROJECT_DIR$/.idea/modules/pretty-box-formatter_main.iml" group="pretty-box-formatter" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pretty-box-formatter_test.iml" filepath="$PROJECT_DIR$/.idea/modules/pretty-box-formatter_test.iml" group="pretty-box-formatter" />
+    </modules>
+  </component>
+</project>
