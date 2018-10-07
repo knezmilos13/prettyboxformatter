@@ -54,4 +54,6 @@ public class DemoTestMethods {
         System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT));
     }
 
+    // TODO: demo per-call configuration with something better than "newline before printing"
+
 }

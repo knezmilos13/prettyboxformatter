@@ -42,7 +42,44 @@ public class PrettyBoxFormatter {
     }
 
     @NotNull
+    public static String format(@NotNull PrettyBoxable thingy,
+                                @NotNull PrettyBoxConfiguration configuration) {
+        return format(thingy.toStringLines(), configuration);
+    }
+
+    @NotNull
     public static String format(@NotNull List<String> lines) {
+        return _format(lines, configuration);
+    }
+
+    @NotNull
+    public static String format(@NotNull List<String> lines,
+                                @NotNull PrettyBoxConfiguration configuration) {
+        PrettyBoxConfiguration mergedConfig =
+                PrettyBoxConfiguration.Builder.createFromInstance(PrettyBoxFormatter.configuration)
+                        .applyFromInstance(configuration)
+                        .build();
+        return _format(lines, mergedConfig);
+    }
+
+    @NotNull
+    public static String format(@NotNull String headerLine, @NotNull PrettyBoxable thingy) {
+        return format(headerLine, thingy.toStringLines());
+    }
+
+    /** Adds a header line before printing all other lines out. For convenience. */
+    @NotNull
+    public static String format(@NotNull String headerLine, @NotNull List<String> lines) {
+        lines.add(0, headerLine);
+        return format(lines);
+    }
+
+
+    // ------------------------------------------------------------------------------------ INTERNAL
+
+    @NotNull
+    private static String _format(@NotNull List<String> lines,
+                                  @NotNull PrettyBoxConfiguration configuration) {
         StringBuilder stringBuilder = new StringBuilder();
 
         if(configuration.isPrefixEveryPrintWithNewline()) stringBuilder.append(" \n");
@@ -57,18 +94,6 @@ public class PrettyBoxFormatter {
         stringBuilder.append(BOTTOM_BORDER);
 
         return stringBuilder.toString();
-    }
-
-    @NotNull
-    public static String format(@NotNull String headerLine, @NotNull PrettyBoxable thingy) {
-        return format(headerLine, thingy.toStringLines());
-    }
-
-    /** Adds a header line before printing all other lines out. For convenience. */
-    @NotNull
-    public static String format(@NotNull String headerLine, @NotNull List<String> lines) {
-        lines.add(0, headerLine);
-        return format(lines);
     }
 
 }
