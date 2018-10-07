@@ -49,7 +49,7 @@ public class DemoTestMethods {
     public void _003_printSimpleBoxableObject_prefixNewline() {
         PrettyBoxFormatter.setConfiguration(
                 new PrettyBoxConfiguration.Builder()
-                        .shouldPrefixEveryPrintWithNewline(true)
+                        .setPrefixEveryPrintWithNewline(true)
                         .build());
         System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT));
     }

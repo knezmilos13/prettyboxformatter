@@ -19,12 +19,21 @@ public class PrettyBoxFormatter {
 
     private static final String NEWLINE = System.getProperty("line.separator");
 
+
     @NotNull
-    private static PrettyBoxConfiguration configuration =
-            new PrettyBoxConfiguration.Builder().build();
+    private static final PrettyBoxConfiguration DEFAULT_CONFIGURATION =
+            new PrettyBoxConfiguration.Builder()
+                    .setPrefixEveryPrintWithNewline(false)
+                    .build();
+
+    @NotNull
+    private static PrettyBoxConfiguration configuration = DEFAULT_CONFIGURATION;
 
     public static void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
-        PrettyBoxFormatter.configuration = configuration;
+        PrettyBoxFormatter.configuration =
+                PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
+                        .applyFromInstance(configuration)
+                        .build();
     }
 
     @NotNull
@@ -36,7 +45,7 @@ public class PrettyBoxFormatter {
     public static String format(@NotNull List<String> lines) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(configuration.shouldPrefixEveryPrintWithNewline()) stringBuilder.append(" \n");
+        if(configuration.isPrefixEveryPrintWithNewline()) stringBuilder.append(" \n");
 
         stringBuilder.append(TOP_BORDER).append(NEWLINE);
 
