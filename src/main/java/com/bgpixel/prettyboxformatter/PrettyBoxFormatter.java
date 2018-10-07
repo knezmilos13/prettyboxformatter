@@ -62,18 +62,6 @@ public class PrettyBoxFormatter {
         return _format(lines, mergedConfig);
     }
 
-    @NotNull
-    public static String format(@NotNull String headerLine, @NotNull PrettyBoxable thingy) {
-        return format(headerLine, thingy.toStringLines());
-    }
-
-    /** Adds a header line before printing all other lines out. For convenience. */
-    @NotNull
-    public static String format(@NotNull String headerLine, @NotNull List<String> lines) {
-        lines.add(0, headerLine);
-        return format(lines);
-    }
-
 
     // ------------------------------------------------------------------------------------ INTERNAL
 
