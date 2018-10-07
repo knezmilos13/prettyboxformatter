@@ -20,6 +20,14 @@ public class PrettyBoxFormatter {
     private static final String NEWLINE = System.getProperty("line.separator");
 
     @NotNull
+    private static PrettyBoxConfiguration configuration =
+            new PrettyBoxConfiguration.Builder().build();
+
+    public static void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
+        PrettyBoxFormatter.configuration = configuration;
+    }
+
+    @NotNull
     public static String format(@NotNull PrettyBoxable thingy) {
         return format(thingy.toStringLines());
     }
@@ -28,7 +36,7 @@ public class PrettyBoxFormatter {
     public static String format(@NotNull List<String> lines) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(" \n"); // Logcat now breaks the box on first line, so do a "\n"
+        if(configuration.shouldPrefixEveryPrintWithNewline()) stringBuilder.append(" \n");
 
         stringBuilder.append(TOP_BORDER).append(NEWLINE);
 
