@@ -46,14 +46,86 @@ public class DemoTestMethods {
     }
 
     @Test
-    public void _003_printSimpleBoxableObject_prefixNewline() {
-        PrettyBoxFormatter.setConfiguration(
+    public void _003_prefixNewline() {
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setPrefixEveryPrintWithNewline(true)
-                        .build());
-        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT));
+                        .build()));
     }
 
-    // TODO: demo per-call configuration with something better than "newline before printing"
+    @Test
+    public void _004_width_smaller_fixed() {
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setCharsPerLine(32)
+                        .setWrapContent(false)
+                        .build()));
+    }
+
+    @Test
+    public void _005_width_larger_fixed() {
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setCharsPerLine(60)
+                        .setWrapContent(false)
+                        .build()));
+    }
+
+    @Test
+    public void _006_width_wrap() {
+        System.out.println(
+                PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setCharsPerLine(60)
+                        .setWrapContent(true)
+                        .build())
+        );
+    }
+
+    @Test
+    public void _007_padding() {
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setHorizontalPadding(10)
+                        .setVerticalPadding(1)
+                        .build()));
+    }
+
+    @Test
+    public void _008_margin() {
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setHorizontalMargin(10)
+                        .setVerticalMargin(1)
+                        .build()));
+    }
+
+    @Test
+    public void _009_notClosedOnRight() {
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setHorizontalMargin(10)
+                        .setVerticalMargin(1)
+                        .setHorizontalPadding(5)
+                        .setVerticalPadding(1)
+                        .setCharsPerLine(80)
+                        .setWrapContent(false)
+                        .setCloseOnTheRight(false)
+                        .build()));
+    }
+
+    @Test
+    public void _010_globalConfigWithPerCallConfig() {
+        PrettyBoxFormatter.setConfiguration(
+                new PrettyBoxConfiguration.Builder()
+                        .setHorizontalMargin(10)
+                        .setVerticalMargin(1)
+                        .build());
+        System.out.println(PrettyBoxFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setHorizontalPadding(5)
+                        .setVerticalPadding(1)
+                        .build()));
+    }
 
 }
