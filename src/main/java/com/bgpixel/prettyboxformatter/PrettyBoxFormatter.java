@@ -34,6 +34,9 @@ public class PrettyBoxFormatter {
     @NotNull
     private static PrettyBoxConfiguration configuration = DEFAULT_CONFIGURATION;
 
+    /** Sets a global PrettyBoxConfiguration instance that will be used for all printing. Settings
+     *  not defined in the given instance will fallback to default settings. Individual settings can
+     *  be overridden by passing a PrettyBoxConfiguration with each printing call. */
     public static void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
         PrettyBoxFormatter.configuration =
                 PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
@@ -41,22 +44,31 @@ public class PrettyBoxFormatter {
                         .build();
     }
 
+    /** Formats content provided by a PrettyBoxable instance into a pretty box using the global
+     *  PrettyBoxConfiguration */
     @NotNull
     public static String format(@NotNull PrettyBoxable thingy) {
         return format(thingy.toStringLines());
     }
 
+    /** Formats content provided by a PrettyBoxable instance into a pretty box using the given
+     *  configuration instance. Any settings not defined in given instance will fallback to the
+     *  global configuration instance. */
     @NotNull
     public static String format(@NotNull PrettyBoxable thingy,
                                 @NotNull PrettyBoxConfiguration configuration) {
         return format(thingy.toStringLines(), configuration);
     }
 
+    /** Formats given string lines into a pretty box using the global PrettyBoxConfiguration. */
     @NotNull
     public static String format(@NotNull List<String> lines) {
         return _format(lines, configuration);
     }
 
+    /** Formats given string lines instance into a pretty box using the given configuration
+     *  instance. Any settings not defined in given instance will fallback to the global
+     *  configuration instance. */
     @NotNull
     public static String format(@NotNull List<String> lines,
                                 @NotNull PrettyBoxConfiguration configuration) {

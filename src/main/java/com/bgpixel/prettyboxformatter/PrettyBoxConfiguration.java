@@ -89,48 +89,73 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
+        /** Some loggers add tags and other stuff before every printout. This makes the first line
+         *  of the box be moved to the side compared to the following lines (example: Logcat in
+         *  Android). To avoid this, set this setting to true to add a newline before every box. */
         @NotNull
         public Builder setPrefixEveryPrintWithNewline(@Nullable Boolean shouldPrefix) {
             this.prefixEveryPrintWithNewline = shouldPrefix;
             return this;
         }
 
+        /** Number of characters to show per line. If wrapContent is set to true, this represents
+         *  only the maximum possible width of the box. If wrapContent is set to false, this
+         *  represents the fixed width of the box.<br/>
+         *  Note: both the horizontal padding and margin are included in the charsPerLine value. */
+        // TODO mention sanitization
         @NotNull
         public Builder setCharsPerLine(@Nullable Integer charsPerLine) {
             this.charsPerLine = charsPerLine;
             return this;
         }
 
+        /** If set to true, the box will take the minimum width needed to show all content without
+         *  splitting lines, if possible. The box will not be wider than charsPerLine.<br/>
+         *  If set to false, the box will have a fixed width of charsPerLine */
         @NotNull
         public Builder setWrapContent(@Nullable Boolean wrapContent) {
             this.wrapContent = wrapContent;
             return this;
         }
 
+        /** If set to true, the box will be closed on the right side.<br/>
+         *  If set to false, the right side of the box will be left open.<br/>
+         *  Note: many "monospaced" fonts are not fully monospaced so closed boxes might not work
+         *  properly (i.e. the lengths of the lines won't be the same). In that case you should set
+         *  this value to false. */
         @NotNull
         public Builder setCloseOnTheRight(@Nullable Boolean closeOnTheRight) {
             this.closeOnTheRight = closeOnTheRight;
             return this;
         }
 
+        /** Sets the number of spaces between the text and the left/right sides of the box. Is part
+         *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,
+         *  and width of 40 would have 18 spaces left for content */
         @NotNull
         public Builder setHorizontalPadding(@Nullable Integer horizontalPadding) {
             this.horizontalPadding = horizontalPadding;
             return this;
         }
 
+        /** Sets the number of newlines between the text and the top/bottom sides of the box. */
         @NotNull
         public Builder setVerticalPadding(@Nullable Integer verticalPadding) {
             this.verticalPadding = verticalPadding;
             return this;
         }
 
+        /** Sets the number of spaces between the box left/right sides and the surrounding elements
+         *  (e.g. line start, other boxes). Is part of the box width, e.g. a closed box with edges 1
+         *  space wide, horizontal margin of 10, and width of 40 would have 18 spaces left for
+         *  content */
         @NotNull
         public Builder setHorizontalMargin(@Nullable Integer horizontalMargin) {
             this.horizontalMargin = horizontalMargin;
             return this;
         }
 
+        /** Sets the number of newlines before and after the box is drawn. */
         @NotNull
         public Builder setVerticalMargin(@Nullable Integer verticalMargin) {
             this.verticalMargin = verticalMargin;
