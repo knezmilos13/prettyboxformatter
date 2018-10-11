@@ -31,23 +31,34 @@ public class PrettyBoxFormatter {
                     .setVerticalMargin(0)
                     .build();
 
-    @NotNull
-    private static PrettyBoxConfiguration configuration = DEFAULT_CONFIGURATION;
+    @NotNull private PrettyBoxConfiguration configuration = DEFAULT_CONFIGURATION;
+
+    public PrettyBoxFormatter() {}
+
+    public PrettyBoxFormatter(@NotNull PrettyBoxConfiguration configuration) {
+        setConfiguration(configuration);
+    }
 
     /** Sets a global PrettyBoxConfiguration instance that will be used for all printing. Settings
      *  not defined in the given instance will fallback to default settings. Individual settings can
      *  be overridden by passing a PrettyBoxConfiguration with each printing call. */
-    public static void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
-        PrettyBoxFormatter.configuration =
+    public void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
+        this.configuration =
                 PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
                         .applyFromInstance(configuration)
                         .build();
     }
 
+    /** Returns the used global PrettyBoxConfiguration instance. */
+    @NotNull public PrettyBoxConfiguration getConfiguration() { return configuration; }
+
+
+    // -------------------------------------------------------------------------------------- FORMAT
+
     /** Formats content provided by a PrettyBoxable instance into a pretty box using the global
      *  PrettyBoxConfiguration */
     @NotNull
-    public static String format(@NotNull PrettyBoxable thingy) {
+    public String format(@NotNull PrettyBoxable thingy) {
         return format(thingy.toStringLines());
     }
 
@@ -55,14 +66,14 @@ public class PrettyBoxFormatter {
      *  configuration instance. Any settings not defined in given instance will fallback to the
      *  global configuration instance. */
     @NotNull
-    public static String format(@NotNull PrettyBoxable thingy,
-                                @NotNull PrettyBoxConfiguration configuration) {
+    public String format(@NotNull PrettyBoxable thingy,
+                         @NotNull PrettyBoxConfiguration configuration) {
         return format(thingy.toStringLines(), configuration);
     }
 
     /** Formats given string lines into a pretty box using the global PrettyBoxConfiguration. */
     @NotNull
-    public static String format(@NotNull List<String> lines) {
+    public String format(@NotNull List<String> lines) {
         return _format(lines, configuration);
     }
 
@@ -70,10 +81,10 @@ public class PrettyBoxFormatter {
      *  instance. Any settings not defined in given instance will fallback to the global
      *  configuration instance. */
     @NotNull
-    public static String format(@NotNull List<String> lines,
-                                @NotNull PrettyBoxConfiguration configuration) {
+    public String format(@NotNull List<String> lines,
+                         @NotNull PrettyBoxConfiguration configuration) {
         PrettyBoxConfiguration mergedConfig =
-                PrettyBoxConfiguration.Builder.createFromInstance(PrettyBoxFormatter.configuration)
+                PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
                         .applyFromInstance(configuration)
                         .build();
         return _format(lines, mergedConfig);
@@ -89,7 +100,7 @@ public class PrettyBoxFormatter {
                                   @NotNull PrettyBoxConfiguration configuration) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(" \n");
+        if(configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(NEWLINE);
 
         int contentWidth = determineMaxBoxWidth(configuration);
 
@@ -233,8 +244,6 @@ public class PrettyBoxFormatter {
 
         if(configuration.getCloseOnTheRight())
             stringBuilder.append(BOTTOM_RIGHT_CORNER);
-
-        stringBuilder.append(NEWLINE);
     }
 
 
