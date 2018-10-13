@@ -31,9 +31,31 @@ public class PrettyBoxFormatter {
                     .setVerticalMargin(0)
                     .build();
 
+    private static final String INVALID_PER_CALL_CONFIGURATION_MESSAGE =
+            "Warning: this PrettyBoxFormatter has been configured using an invalid per-call " +
+                    "PrettyBoxConfiguration. Falling back to global configuration!";
+    private static final String INVALID_GLOBAL_CONFIGURATION_MESSAGE =
+            "Warning: this PrettyBoxFormatter has been configured using an invalid global " +
+                    "PrettyBoxConfiguration. Falling back to default configuration!";
+
+    /** Global configuration instance. Combined with per-call instances (if given). */
     @NotNull private PrettyBoxConfiguration configuration = DEFAULT_CONFIGURATION;
 
-    public PrettyBoxFormatter() {}
+    /** Set to true if client attempted to set an invalid global configuration instance. If true,
+     *  will use a default configuration and display a warning message with every printing call. */
+    private boolean invalidConfiguration = false;
+
+    /** The maximum width of the box (exact width if wrap is false) that can be used for content. */
+    private int maxContentWidth;
+
+    /** The maximum width (exact width if wrap is false) of horizontal lines used for horizontal
+     *  edges and to split content into sections. */
+    private int maxLineWidth;
+
+
+    public PrettyBoxFormatter() {
+        this(DEFAULT_CONFIGURATION);
+    }
 
     public PrettyBoxFormatter(@NotNull PrettyBoxConfiguration configuration) {
         setConfiguration(configuration);
@@ -41,12 +63,20 @@ public class PrettyBoxFormatter {
 
     /** Sets a global PrettyBoxConfiguration instance that will be used for all printing. Settings
      *  not defined in the given instance will fallback to default settings. Individual settings can
-     *  be overridden by passing a PrettyBoxConfiguration with each printing call. */
+     *  be overridden by passing a PrettyBoxConfiguration with each printing call.<br/>
+     *  If the resulting configuration is not valid, previous configuration will not be changed and
+     *  an error message will be output with all future printing calls. */
     public void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
-        this.configuration =
+        PrettyBoxConfiguration combinedConfiguration =
                 PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
                         .applyFromInstance(configuration)
                         .build();
+
+        invalidConfiguration = !validateConfiguration(combinedConfiguration);
+        this.configuration = invalidConfiguration ? DEFAULT_CONFIGURATION : combinedConfiguration;
+
+        maxContentWidth = determineMaxContentWidth(this.configuration);
+        maxLineWidth = determineMaxLineWidth(this.configuration);
     }
 
     /** Returns the used global PrettyBoxConfiguration instance. */
@@ -74,7 +104,10 @@ public class PrettyBoxFormatter {
     /** Formats given string lines into a pretty box using the global PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull List<String> lines) {
-        return _format(lines, configuration);
+        FormattingTaskData taskData =
+                prepareFormattingTaskData(lines, configuration, maxContentWidth, maxLineWidth);
+        if(invalidConfiguration) taskData.setPrintInvalidGlobalConfigMessage(true);
+        return drawBox(taskData, configuration);
     }
 
     /** Formats given string lines instance into a pretty box using the given configuration
@@ -87,70 +120,99 @@ public class PrettyBoxFormatter {
                 PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
                         .applyFromInstance(configuration)
                         .build();
-        return _format(lines, mergedConfig);
+
+        boolean invalidPerCallConfiguration = !validateConfiguration(mergedConfig);
+
+        PrettyBoxConfiguration configurationToUse;
+        int maxContentWidth, maxLineWidth;
+        if(invalidPerCallConfiguration) {
+            // Note: if this.invalidConfiguration is true, this.configuration has the valid fallback
+            configurationToUse = this.configuration;
+            maxContentWidth = this.maxContentWidth;
+            maxLineWidth = this.maxLineWidth;
+        } else {
+            configurationToUse = mergedConfig;
+            maxContentWidth = determineMaxContentWidth(configurationToUse);
+            maxLineWidth = determineMaxLineWidth(configurationToUse);
+        }
+        // TODO can we move all of this stuff to prepareFormattingTaskData?
+
+        FormattingTaskData taskData =
+                prepareFormattingTaskData(lines, configurationToUse, maxContentWidth, maxLineWidth);
+        if(invalidConfiguration) taskData.setPrintInvalidGlobalConfigMessage(true);
+        if(invalidPerCallConfiguration) taskData.setPrintInvalidPerCallConfigMessage(true);
+
+        return drawBox(taskData, configurationToUse);
     }
 
 
     // ------------------------------------------------------------------------------ MAIN ALGORITHM
 
+    @SuppressWarnings("ConstantConditions") // We make sure it's not null
+    @NotNull
+    private FormattingTaskData prepareFormattingTaskData(
+            @NotNull List<String> lines,
+            @NotNull PrettyBoxConfiguration configuration,
+            int maxContentWidth,
+            int maxLineWidth) {
+
+        FormattingTaskData taskData = new FormattingTaskData();
+        taskData.setLines(splitLinesToFitBox(lines, maxContentWidth));
+
+        // If wrap content is TRUE, make the box as wide as the longest line we have.
+        if (configuration.getWrapContent()) {
+            int longestContentWidth = 0;
+            for (String line : taskData.getLines())
+                longestContentWidth = Math.max(line.length(), longestContentWidth);
+            taskData.setContentWidth(longestContentWidth);
+            taskData.setLineWidth(taskData.getContentWidth() +
+                    (configuration.getCloseOnTheRight() ? 2 : 1) * configuration.getHorizontalPadding());
+        } else {
+            taskData.setContentWidth(maxContentWidth);
+            taskData.setLineWidth(maxLineWidth);
+        }
+
+        return taskData;
+    }
+
+
     // stuff is nullable, but we make sure the default settings provide fallback non-null values
     @SuppressWarnings("ConstantConditions")
     @NotNull
-    private static String _format(@NotNull List<String> lines,
-                                  @NotNull PrettyBoxConfiguration configuration) {
+    private String drawBox(@NotNull FormattingTaskData taskData,
+                           @NotNull PrettyBoxConfiguration configuration) {
+
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(NEWLINE);
+        if(invalidConfiguration)
+            stringBuilder.append(INVALID_PER_CALL_CONFIGURATION_MESSAGE).append(NEWLINE);
+        if(invalidConfiguration)
+            stringBuilder.append(INVALID_GLOBAL_CONFIGURATION_MESSAGE).append(NEWLINE);
 
-        int contentWidth = determineMaxBoxWidth(configuration);
-
-        List<String> splitLines = splitLinesToFitBox(lines, contentWidth);
-
-        // If wrap content is TRUE, make the box as wide as the longest line we have.
-        if(configuration.getWrapContent()) {
-            int longestContentWidth = 0;
-            for(String line : splitLines)
-                longestContentWidth = Math.max(line.length(), longestContentWidth);
-            contentWidth = longestContentWidth;
-        }
-
-        int lineWidth = contentWidth +
-                (configuration.getCloseOnTheRight()? 2:1) * configuration.getHorizontalPadding();
+        if (configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(NEWLINE);
 
         drawVerticalMargin(stringBuilder, configuration.getVerticalMargin());
 
-        drawTopLine(stringBuilder, lineWidth, configuration);
+        drawTopLine(stringBuilder, taskData.getLineWidth(), configuration);
 
-        drawVerticalPadding(stringBuilder, lineWidth, configuration);
+        drawVerticalPadding(stringBuilder, taskData.getLineWidth(), configuration);
 
-        for(String line : splitLines) {
-            if(line.length() == 0) drawInnerLine(stringBuilder, lineWidth, configuration);
-            else drawContentLine(stringBuilder, line, contentWidth, configuration);
+        for (String line : taskData.getLines()) {
+            if (line.length() == 0) drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
+            else drawContentLine(stringBuilder, line, taskData.getContentWidth(), configuration);
         }
 
-        drawVerticalPadding(stringBuilder, lineWidth, configuration);
+        drawVerticalPadding(stringBuilder, taskData.getLineWidth(), configuration);
 
-        drawBottomLine(stringBuilder, lineWidth, configuration);
+        drawBottomLine(stringBuilder, taskData.getLineWidth(), configuration);
 
         drawVerticalMargin(stringBuilder, configuration.getVerticalMargin());
 
         return stringBuilder.toString();
     }
 
-    @SuppressWarnings("ConstantConditions") // @see _format
-    private static int determineMaxBoxWidth(@NotNull PrettyBoxConfiguration configuration) {
-        int numSides = configuration.getCloseOnTheRight()? 2 : 1;
-
-        return configuration.getCharsPerLine()
-                - numSides*configuration.getHorizontalPadding()
-                - numSides*configuration.getHorizontalMargin()
-                - numSides;
-
-        // TODO sanitize values if margins and paddings are larger than box
-    }
-
     @NotNull
-    private static List<String> splitLinesToFitBox(@NotNull List<String> lines, int contentWidth) {
+    private List<String> splitLinesToFitBox(@NotNull List<String> lines, int contentWidth) {
         List<String> splitLines = new ArrayList<>();
         for(String line : lines) {
             if(line.length() <= contentWidth) splitLines.add(line);
@@ -159,15 +221,15 @@ public class PrettyBoxFormatter {
         return splitLines;
     }
 
-    private static void drawVerticalMargin(@NotNull StringBuilder stringBuilder,
-                                           int verticalMargin) {
+    private void drawVerticalMargin(@NotNull StringBuilder stringBuilder,
+                                    int verticalMargin) {
         for(int i = 0; i < verticalMargin; i++) stringBuilder.append(NEWLINE);
     }
 
-    @SuppressWarnings("ConstantConditions") // @see _format
-    private static void drawTopLine(@NotNull StringBuilder stringBuilder,
-                                    int lineWidth,
-                                    @NotNull PrettyBoxConfiguration configuration) {
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private void drawTopLine(@NotNull StringBuilder stringBuilder,
+                             int lineWidth,
+                             @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
                 .append(getPadding(configuration.getHorizontalMargin()))
                 .append(TOP_LEFT_CORNER)
@@ -179,10 +241,10 @@ public class PrettyBoxFormatter {
         stringBuilder.append(NEWLINE);
     }
 
-    @SuppressWarnings("ConstantConditions") // @see _format
-    private static void drawVerticalPadding(@NotNull StringBuilder stringBuilder,
-                                            int lineWidth,
-                                            @NotNull PrettyBoxConfiguration configuration) {
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private void drawVerticalPadding(@NotNull StringBuilder stringBuilder,
+                                     int lineWidth,
+                                     @NotNull PrettyBoxConfiguration configuration) {
         for(int i = 0; i < configuration.getVerticalPadding(); i++) {
             stringBuilder
                     .append(getPadding(configuration.getHorizontalMargin()))
@@ -197,10 +259,10 @@ public class PrettyBoxFormatter {
         }
     }
 
-    @SuppressWarnings("ConstantConditions") // @see _format
-    private static void drawInnerLine(@NotNull StringBuilder stringBuilder,
-                                      int lineWidth,
-                                      @NotNull PrettyBoxConfiguration configuration) {
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private void drawInnerLine(@NotNull StringBuilder stringBuilder,
+                               int lineWidth,
+                               @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
                 .append(getPadding(configuration.getHorizontalMargin()))
                 .append(MIDDLE_LEFT_CORNER)
@@ -212,11 +274,11 @@ public class PrettyBoxFormatter {
         stringBuilder.append(NEWLINE);
     }
 
-    @SuppressWarnings("ConstantConditions") // @see _format
-    private static void drawContentLine(@NotNull StringBuilder stringBuilder,
-                                        @NotNull String line,
-                                        int contentWidth,
-                                        @NotNull PrettyBoxConfiguration configuration) {
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private void drawContentLine(@NotNull StringBuilder stringBuilder,
+                                 @NotNull String line,
+                                 int contentWidth,
+                                 @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
                 .append(getPadding(configuration.getHorizontalMargin()))
                 .append(VERTICAL_LINE)
@@ -233,10 +295,10 @@ public class PrettyBoxFormatter {
         stringBuilder.append(NEWLINE);
     }
 
-    @SuppressWarnings("ConstantConditions") // @see _format
-    private static void drawBottomLine(@NotNull StringBuilder stringBuilder,
-                                       int lineWidth,
-                                       @NotNull PrettyBoxConfiguration configuration) {
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private void drawBottomLine(@NotNull StringBuilder stringBuilder,
+                                int lineWidth,
+                                @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
                 .append(getPadding(configuration.getHorizontalMargin()))
                 .append(BOTTOM_LEFT_CORNER)
@@ -247,10 +309,42 @@ public class PrettyBoxFormatter {
     }
 
 
-    // ------------------------------------------------------------------------------------- HELPERS
+    // ------------------------------------------------------------------------------------ INTERNAL
+
+    /** Returns the maximum width of the box (exact width if wrap is false) that can be used for
+     *  content. Can return invalid (zero, negative) values if configuration is invalid (e.g. too
+     *  large padding, too small width) */
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private int determineMaxContentWidth(@NotNull PrettyBoxConfiguration configuration) {
+        int numSides = configuration.getCloseOnTheRight()? 2 : 1;
+
+        return configuration.getCharsPerLine()
+                - numSides*configuration.getHorizontalPadding()
+                - numSides*configuration.getHorizontalMargin()
+                - numSides;
+    }
+
+    /** Returns true if given configuration is valid. Checks if there is enough space to actually
+     *  print out content inside of the box. */
+    private boolean validateConfiguration(@NotNull PrettyBoxConfiguration configuration) {
+        int maxContentWidth = determineMaxContentWidth(configuration);
+        return maxContentWidth > 0;
+    }
+
+    /** Returns the maximum width (exact width if wrap is false) of horizontal lines used for
+     *  horizontal edges and to split content into sections. Can return invalid (zero, negative)
+     *  values if configuration is invalid (e.g. too large margin, too small width) */
+    @SuppressWarnings("ConstantConditions") // @see drawBox
+    private int determineMaxLineWidth(@NotNull PrettyBoxConfiguration configuration) {
+        int numSides = configuration.getCloseOnTheRight()? 2 : 1;
+
+        return configuration.getCharsPerLine()
+                - numSides*configuration.getHorizontalMargin()
+                - numSides;
+    }
 
     @NotNull
-    private static List<String> splitLineEveryNChars(@NotNull String string, int partitionSize) {
+    private List<String> splitLineEveryNChars(@NotNull String string, int partitionSize) {
         List<String> parts = new ArrayList<>();
         int len = string.length();
         for (int i=0; i<len; i+=partitionSize)
@@ -259,22 +353,22 @@ public class PrettyBoxFormatter {
     }
 
     @NotNull
-    private static String getDoubleDivider(int length) {
+    private String getDoubleDivider(int length) {
         return getNCharacterString("─", length);
     }
 
     @NotNull
-    private static String getSingleDivider(int length) {
+    private String getSingleDivider(int length) {
         return getNCharacterString("┄", length);
     }
 
     @NotNull
-    private static String getPadding(int length) {
+    private String getPadding(int length) {
         return getNCharacterString(" ", length);
     }
 
     @NotNull
-    private static String getNCharacterString(@NotNull String character, int length) {
+    private String getNCharacterString(@NotNull String character, int length) {
         StringBuilder outputBuffer = new StringBuilder(length);
         for (int i = 0; i < length; i++) outputBuffer.append(character);
         return outputBuffer.toString();
