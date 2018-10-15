@@ -135,7 +135,6 @@ public class PrettyBoxFormatter {
             maxContentWidth = determineMaxContentWidth(configurationToUse);
             maxLineWidth = determineMaxLineWidth(configurationToUse);
         }
-        // TODO can we move all of this stuff to prepareFormattingTaskData?
 
         FormattingTaskData taskData =
                 prepareFormattingTaskData(lines, configurationToUse, maxContentWidth, maxLineWidth);
