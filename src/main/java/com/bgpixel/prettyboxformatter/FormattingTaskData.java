@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: optimize - pool of objects
 public class FormattingTaskData {
 
     @NotNull private List<String> lines = new ArrayList<>();
