@@ -27,7 +27,7 @@ To add to your project using gradle, add the following:
     }
     
     dependencies {
-        implementation 'com.bgpixel:prettyboxformatter:1.0.0'
+        implementation 'com.bgpixel:prettyboxformatter:1.1.0'
     }
 
 To use the library, first create an instance of `PrettyBoxFormatter` then call one of the 
