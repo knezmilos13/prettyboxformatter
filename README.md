@@ -90,7 +90,7 @@ When setting the instance-level configuration, if the resulting configuration is
 A big problem when using this library is the font used to display the formatted (boxed) strings. Apparently, some monospaced fonts are not entirely monospaced, at least for some of the less used characters like the lines that are used to draw boxes in PrettyBoxFormatter.
 
 Example, from left to right - editor window in IntelliJ, Courier New; markdown preview in IntelliJ, unknown font; console view in IntelliJ, Source code Pro font.
-[[https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/fonts_example_bad_intellij_editor.png]] [[https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/fonts_example_bad_intellij_markdown_preview.png]] [[https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/fonts_example_good_source_code_pro.png]]
+[[https://raw.githubusercontent.com/knezmilos13/prettyboxformatter/master/doc/fonts_example_bad_intellij_editor.png]] [[https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/fonts_example_bad_intellij_markdown_preview.png]] [[https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/fonts_example_good_source_code_pro.png]]
 
 
 ## Examples
