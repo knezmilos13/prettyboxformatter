@@ -89,9 +89,9 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** Some loggers add tags and other stuff before every printout. This makes the first line
-         *  of the box be moved to the side compared to the following lines (example: Logcat in
-         *  Android). To avoid this, set this setting to true to add a newline before every box. */
+        /** Add a newline before every box. This helps with loggers that add tags and other stuff
+         *  before every printout which splits the first line of the box (example: Logcat in
+         *  Android). */
         @NotNull
         public Builder setPrefixEveryPrintWithNewline(@Nullable Boolean shouldPrefix) {
             this.prefixEveryPrintWithNewline = shouldPrefix;
@@ -102,7 +102,6 @@ public class PrettyBoxConfiguration {
          *  only the maximum possible width of the box. If wrapContent is set to false, this
          *  represents the fixed width of the box.<br/>
          *  Note: both the horizontal padding and margin are included in the charsPerLine value. */
-        // TODO mention sanitization
         @NotNull
         public Builder setCharsPerLine(@Nullable Integer charsPerLine) {
             this.charsPerLine = charsPerLine;
@@ -131,7 +130,7 @@ public class PrettyBoxConfiguration {
 
         /** Sets the number of spaces between the text and the left/right sides of the box. Is part
          *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,
-         *  and width of 40 would have 18 spaces left for content */
+         *  and width of 40 would have 18 spaces left for content. */
         @NotNull
         public Builder setHorizontalPadding(@Nullable Integer horizontalPadding) {
             this.horizontalPadding = horizontalPadding;
@@ -148,7 +147,7 @@ public class PrettyBoxConfiguration {
         /** Sets the number of spaces between the box left/right sides and the surrounding elements
          *  (e.g. line start, other boxes). Is part of the box width, e.g. a closed box with edges 1
          *  space wide, horizontal margin of 10, and width of 40 would have 18 spaces left for
-         *  content */
+         *  content. */
         @NotNull
         public Builder setHorizontalMargin(@Nullable Integer horizontalMargin) {
             this.horizontalMargin = horizontalMargin;

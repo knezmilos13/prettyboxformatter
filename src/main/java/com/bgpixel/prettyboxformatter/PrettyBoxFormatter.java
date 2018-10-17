@@ -33,16 +33,17 @@ public class PrettyBoxFormatter {
 
     private static final String INVALID_PER_CALL_CONFIGURATION_MESSAGE =
             "Warning: this PrettyBoxFormatter has been configured using an invalid per-call " +
-                    "PrettyBoxConfiguration. Falling back to global configuration!";
-    private static final String INVALID_GLOBAL_CONFIGURATION_MESSAGE =
-            "Warning: this PrettyBoxFormatter has been configured using an invalid global " +
+                    "PrettyBoxConfiguration. Falling back to instance-level configuration!";
+    private static final String INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE =
+            "Warning: this PrettyBoxFormatter has been configured using an invalid instance-level " +
                     "PrettyBoxConfiguration. Falling back to default configuration!";
 
-    /** Global configuration instance. Combined with per-call instances (if given). */
+    /** Instance-level configuration. Combined with per-call instances (if given). */
     @NotNull private PrettyBoxConfiguration configuration = DEFAULT_CONFIGURATION;
 
-    /** Set to true if client attempted to set an invalid global configuration instance. If true,
-     *  will use a default configuration and display a warning message with every printing call. */
+    /** Set to true if client attempted to set an invalid instance-level configuration instance. If
+     *  true, will use a default configuration and display a warning message with every printing
+     *  call. */
     private boolean invalidConfiguration = false;
 
     /** The maximum width of the box (exact width if wrap is false) that can be used for content. */
@@ -61,11 +62,11 @@ public class PrettyBoxFormatter {
         setConfiguration(configuration);
     }
 
-    /** Sets a global PrettyBoxConfiguration instance that will be used for all printing. Settings
-     *  not defined in the given instance will fallback to default settings. Individual settings can
-     *  be overridden by passing a PrettyBoxConfiguration with each printing call.<br/>
+    /** Sets an instance-level PrettyBoxConfiguration instance that will be used for all printing.
+     *  Settings not defined in the given instance will fallback to default settings. Individual
+     *  settings can be overridden by passing a PrettyBoxConfiguration with each printing call.<br/>
      *  If the resulting configuration is not valid, previous configuration will not be changed and
-     *  an error message will be output with all future printing calls. */
+     *  a warning message will be output with all future printing calls. */
     public void setConfiguration(@NotNull PrettyBoxConfiguration configuration) {
         PrettyBoxConfiguration combinedConfiguration =
                 PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
@@ -79,14 +80,14 @@ public class PrettyBoxFormatter {
         maxLineWidth = determineMaxLineWidth(this.configuration);
     }
 
-    /** Returns the used global PrettyBoxConfiguration instance. */
+    /** Returns the used instance-level PrettyBoxConfiguration instance. */
     @NotNull public PrettyBoxConfiguration getConfiguration() { return configuration; }
 
 
     // -------------------------------------------------------------------------------------- FORMAT
 
-    /** Formats content provided by a PrettyBoxable instance into a pretty box using the global
-     *  PrettyBoxConfiguration */
+    /** Formats content provided by a PrettyBoxable instance into a pretty box using the
+     *  instance-level PrettyBoxConfiguration */
     @NotNull
     public String format(@NotNull PrettyBoxable thingy) {
         return format(thingy.toStringLines());
@@ -94,24 +95,24 @@ public class PrettyBoxFormatter {
 
     /** Formats content provided by a PrettyBoxable instance into a pretty box using the given
      *  configuration instance. Any settings not defined in given instance will fallback to the
-     *  global configuration instance. */
+     *  instance-level configuration instance. */
     @NotNull
     public String format(@NotNull PrettyBoxable thingy,
                          @NotNull PrettyBoxConfiguration configuration) {
         return format(thingy.toStringLines(), configuration);
     }
 
-    /** Formats given string lines into a pretty box using the global PrettyBoxConfiguration. */
+    /** Formats given string lines into a pretty box using the instance-level PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull List<String> lines) {
         FormattingTaskData taskData =
                 prepareFormattingTaskData(lines, configuration, maxContentWidth, maxLineWidth);
-        if(invalidConfiguration) taskData.setPrintInvalidGlobalConfigMessage(true);
+        if(invalidConfiguration) taskData.setPrintInvalidInstanceLevelConfigMessage(true);
         return drawBox(taskData, configuration);
     }
 
     /** Formats given string lines instance into a pretty box using the given configuration
-     *  instance. Any settings not defined in given instance will fallback to the global
+     *  instance. Any settings not defined in given instance will fallback to the instance-level
      *  configuration instance. */
     @NotNull
     public String format(@NotNull List<String> lines,
@@ -138,7 +139,7 @@ public class PrettyBoxFormatter {
 
         FormattingTaskData taskData =
                 prepareFormattingTaskData(lines, configurationToUse, maxContentWidth, maxLineWidth);
-        if(invalidConfiguration) taskData.setPrintInvalidGlobalConfigMessage(true);
+        if(invalidConfiguration) taskData.setPrintInvalidInstanceLevelConfigMessage(true);
         if(invalidPerCallConfiguration) taskData.setPrintInvalidPerCallConfigMessage(true);
 
         return drawBox(taskData, configurationToUse);
@@ -186,7 +187,7 @@ public class PrettyBoxFormatter {
         if(invalidConfiguration)
             stringBuilder.append(INVALID_PER_CALL_CONFIGURATION_MESSAGE).append(NEWLINE);
         if(invalidConfiguration)
-            stringBuilder.append(INVALID_GLOBAL_CONFIGURATION_MESSAGE).append(NEWLINE);
+            stringBuilder.append(INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE).append(NEWLINE);
 
         if (configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(NEWLINE);
 

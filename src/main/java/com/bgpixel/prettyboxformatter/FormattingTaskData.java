@@ -11,7 +11,7 @@ public class FormattingTaskData {
     private int contentWidth;
     private int lineWidth;
 
-    private boolean printInvalidGlobalConfigMessage = false;
+    private boolean printInvalidInstanceLevelConfigMessage = false;
     private boolean printInvalidPerCallConfigMessage = false;
 
     @NotNull public List<String> getLines() { return lines; }
@@ -23,9 +23,9 @@ public class FormattingTaskData {
     public int getLineWidth() { return lineWidth; }
     public void setLineWidth(int lineWidth) { this.lineWidth = lineWidth; }
 
-    public boolean isPrintInvalidGlobalConfigMessage() { return printInvalidGlobalConfigMessage; }
-    public void setPrintInvalidGlobalConfigMessage(boolean printInvalidGlobalConfigMessage) {
-        this.printInvalidGlobalConfigMessage = printInvalidGlobalConfigMessage;
+    public boolean isPrintInvalidInstanceLevelConfigMessage() { return printInvalidInstanceLevelConfigMessage; }
+    public void setPrintInvalidInstanceLevelConfigMessage(boolean printInvalidGlobalConfigMessage) {
+        this.printInvalidInstanceLevelConfigMessage = printInvalidGlobalConfigMessage;
     }
 
     public boolean isPrintInvalidPerCallConfigMessage() { return printInvalidPerCallConfigMessage; }

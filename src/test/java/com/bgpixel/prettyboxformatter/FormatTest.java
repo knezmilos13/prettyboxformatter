@@ -169,13 +169,13 @@ public class FormatTest {
 
     private static final String test009expectedResult =
             NLN +
-            "          ┌─────────────────────────────────────────────────────────────────────" + NLN +
+            "          ┌───────────────────────────────────────────────────────────" + NLN +
             "          │" + NLN +
             "          │     Number of apples: 5" + NLN +
             "          │     Apple seller name: John Johnson" + NLN +
             "          │     Has green apples: true" + NLN +
             "          │" + NLN +
-            "          └─────────────────────────────────────────────────────────────────────" + NLN;
+            "          └───────────────────────────────────────────────────────────" + NLN;
     @Test
     public void _009_notClosedOnRight() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
@@ -184,7 +184,7 @@ public class FormatTest {
                         .setVerticalMargin(1)
                         .setHorizontalPadding(5)
                         .setVerticalPadding(1)
-                        .setCharsPerLine(80)
+                        .setCharsPerLine(70)
                         .setWrapContent(false)
                         .setCloseOnTheRight(false)
                         .build());

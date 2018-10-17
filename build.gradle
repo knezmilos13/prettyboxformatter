@@ -13,7 +13,7 @@ plugins {
 }
 
 group 'com.bgpixel'
-version '1.0.0'
+version '1.1.0'
 
 sourceCompatibility = 1.8
 
@@ -75,7 +75,7 @@ publishing {
             }
             groupId 'com.bgpixel'
             artifactId 'prettyboxformatter'
-            version '1.0.0'
+            version '1.1.0'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Java logging into text boxes')
@@ -99,8 +99,8 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/knezmilos13/prettyboxformatter'
         version {
-            name = '1.0.0'
-            desc = '1.0.0'
+            name = '1.1.0'
+            desc = '1.1.0'
             released  = new Date()
         }
     }
