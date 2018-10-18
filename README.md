@@ -22,12 +22,10 @@ PrettyBoxFormatter can be used both with regular Java and with Android.
 
 To add to your project using gradle, add the following:
 
-    repositories {
-        maven { url "https://dl.bintray.com/knezmilos13/PrettyBoxFormatter" }
-    }
-    
     dependencies {
+        ...
         implementation 'com.bgpixel:prettyboxformatter:1.1.0'
+        ...
     }
 
 To use the library, first create an instance of `PrettyBoxFormatter` then call one of the 
