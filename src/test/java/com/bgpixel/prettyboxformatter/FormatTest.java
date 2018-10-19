@@ -168,31 +168,6 @@ public class FormatTest {
     }
 
     private static final String test009expectedResult =
-            NLN +
-            "          ┌───────────────────────────────────────────────────────────" + NLN +
-            "          │" + NLN +
-            "          │     Number of apples: 5" + NLN +
-            "          │     Apple seller name: John Johnson" + NLN +
-            "          │     Has green apples: true" + NLN +
-            "          │" + NLN +
-            "          └───────────────────────────────────────────────────────────" + NLN;
-    @Test
-    public void _009_notClosedOnRight() {
-        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
-                new PrettyBoxConfiguration.Builder()
-                        .setHorizontalMargin(10)
-                        .setVerticalMargin(1)
-                        .setHorizontalPadding(5)
-                        .setVerticalPadding(1)
-                        .setCharsPerLine(70)
-                        .setWrapContent(false)
-                        .setCloseOnTheRight(false)
-                        .build());
-        Assert.assertEquals(test009expectedResult, result);
-        System.out.println(result);
-    }
-
-    private static final String test010expectedResult =
             "┌─────────────────────────────────────────┐" + NLN +
             "│                                         │" + NLN +
             "│     Number of apples: 5                 │" + NLN +
@@ -201,7 +176,7 @@ public class FormatTest {
             "│                                         │" + NLN +
             "└─────────────────────────────────────────┘";
     @Test
-    public void _010_globalConfigWithPerCallConfig() {
+    public void _009_globalConfigWithPerCallConfig() {
         pbFormatter.setConfiguration(
                 new PrettyBoxConfiguration.Builder()
                         .setHorizontalMargin(10)
@@ -212,7 +187,59 @@ public class FormatTest {
                         .setHorizontalPadding(5)
                         .setVerticalPadding(1)
                         .build());
+        Assert.assertEquals(test009expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test010expectedResult =
+            "┌───────────────────────────────────────────────────────────────────────────────" + NLN +
+            "│ Number of apples: 5" + NLN +
+            "│ Apple seller name: John Johnson" + NLN +
+            "│ Has green apples: true" + NLN +
+            "└───────────────────────────────────────────────────────────────────────────────";
+    @Test
+    public void _010_notClosedOnRight() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setWrapContent(false)
+                        .setCloseOnTheRight(false)
+                        .build());
         Assert.assertEquals(test010expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test011expectedResult =
+            "─────────────────────────────────┐" + NLN +
+            " Number of apples: 5             │" + NLN +
+            " Apple seller name: John Johnson │" + NLN +
+            " Has green apples: true          │" + NLN +
+            "─────────────────────────────────┘";
+    @Test
+    public void _011_notClosedOnLeft() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setWrapContent(true)
+                        .setCloseOnTheLeft(false)
+                        .build());
+        Assert.assertEquals(test011expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test012expectedResult =
+            "─────────────────────────────────" + NLN +
+            " Number of apples: 5" + NLN +
+            " Apple seller name: John Johnson" + NLN +
+            " Has green apples: true" + NLN +
+            "─────────────────────────────────";
+    @Test
+    public void _012_notClosedLeftNorRight() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setWrapContent(true)
+                        .setCloseOnTheLeft(false)
+                        .setCloseOnTheRight(false)
+                        .build());
+        Assert.assertEquals(test012expectedResult, result);
         System.out.println(result);
     }
 

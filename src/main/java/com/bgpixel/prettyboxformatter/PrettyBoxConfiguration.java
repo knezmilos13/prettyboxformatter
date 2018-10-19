@@ -8,6 +8,7 @@ public class PrettyBoxConfiguration {
     @Nullable private final Boolean prefixEveryPrintWithNewline;
     @Nullable private final Integer charsPerLine;
     @Nullable private final Boolean wrapContent;
+    @Nullable private final Boolean closeOnTheLeft;
     @Nullable private final Boolean closeOnTheRight;
     @Nullable private final Integer horizontalPadding;
     @Nullable private final Integer verticalPadding;
@@ -17,6 +18,7 @@ public class PrettyBoxConfiguration {
     private PrettyBoxConfiguration(@Nullable Boolean prefixEveryPrintWithNewline,
                                    @Nullable Integer charsPerLine,
                                    @Nullable Boolean wrapContent,
+                                   @Nullable Boolean closeOnTheLeft,
                                    @Nullable Boolean closeOnTheRight,
                                    @Nullable Integer horizontalPadding,
                                    @Nullable Integer verticalPadding,
@@ -25,6 +27,7 @@ public class PrettyBoxConfiguration {
         this.prefixEveryPrintWithNewline = prefixEveryPrintWithNewline;
         this.charsPerLine = charsPerLine;
         this.wrapContent = wrapContent;
+        this.closeOnTheLeft = closeOnTheLeft;
         this.closeOnTheRight = closeOnTheRight;
         this.horizontalPadding = horizontalPadding;
         this.verticalPadding = verticalPadding;
@@ -35,6 +38,7 @@ public class PrettyBoxConfiguration {
     @Nullable public Boolean getPrefixEveryPrintWithNewline() { return prefixEveryPrintWithNewline; }
     @Nullable public Integer getCharsPerLine() { return charsPerLine; }
     @Nullable public Boolean getWrapContent() { return wrapContent; }
+    @Nullable public Boolean getCloseOnTheLeft() { return closeOnTheLeft; }
     @Nullable public Boolean getCloseOnTheRight() { return closeOnTheRight; }
     @Nullable public Integer getHorizontalPadding() { return horizontalPadding; }
     @Nullable public Integer getVerticalPadding() { return verticalPadding; }
@@ -46,6 +50,7 @@ public class PrettyBoxConfiguration {
         @Nullable private Boolean prefixEveryPrintWithNewline = false;
         @Nullable private Integer charsPerLine;
         @Nullable private Boolean wrapContent;
+        @Nullable private Boolean closeOnTheLeft;
         @Nullable private Boolean closeOnTheRight;
         @Nullable private Integer horizontalPadding;
         @Nullable private Integer verticalPadding;
@@ -59,6 +64,7 @@ public class PrettyBoxConfiguration {
             builder.setPrefixEveryPrintWithNewline(configuration.getPrefixEveryPrintWithNewline());
             builder.setCharsPerLine(configuration.getCharsPerLine());
             builder.setWrapContent(configuration.getWrapContent());
+            builder.setCloseOnTheLeft(configuration.getCloseOnTheLeft());
             builder.setCloseOnTheRight(configuration.getCloseOnTheRight());
             builder.setHorizontalPadding(configuration.getHorizontalPadding());
             builder.setVerticalPadding(configuration.getVerticalPadding());
@@ -76,6 +82,8 @@ public class PrettyBoxConfiguration {
                 this.charsPerLine = configuration.getCharsPerLine();
             if(configuration.getWrapContent() != null)
                 this.wrapContent = configuration.getWrapContent();
+            if(configuration.getCloseOnTheLeft() != null)
+                this.closeOnTheLeft = configuration.getCloseOnTheLeft();
             if(configuration.getCloseOnTheRight() != null)
                 this.closeOnTheRight = configuration.getCloseOnTheRight();
             if(configuration.getHorizontalPadding() != null)
@@ -114,6 +122,14 @@ public class PrettyBoxConfiguration {
         @NotNull
         public Builder setWrapContent(@Nullable Boolean wrapContent) {
             this.wrapContent = wrapContent;
+            return this;
+        }
+
+        /** If set to true, the box will be closed on the left side.<br/>
+         *  If set to false, the left side of the box will be left open. */
+        @NotNull
+        public Builder setCloseOnTheLeft(@Nullable Boolean closeOnTheLeft) {
+            this.closeOnTheLeft = closeOnTheLeft;
             return this;
         }
 
@@ -167,6 +183,7 @@ public class PrettyBoxConfiguration {
                     prefixEveryPrintWithNewline,
                     charsPerLine,
                     wrapContent,
+                    closeOnTheLeft,
                     closeOnTheRight,
                     horizontalPadding,
                     verticalPadding,
