@@ -74,6 +74,7 @@ for settings that were not provided in the instance passed with a call to `forma
 | prefixEveryPrintWithNewline | Add a newline before every box. This helps with loggers that add tags and other stuff before every printout which splits the first line of the box (example: Logcat in Android). |
 | charsPerLine | Number of characters to show per line. If `wrapContent` is set to `true`, this represents only the maximum possible width of the box. If `wrapContent` is set to `false`, this represents the fixed width of the box. <br/>Note: both the horizontal padding and margin are included in the `charsPerLine` value.   |
 | wrapContent | If set to `true`, the box will take the minimum width needed to show all content without splitting lines, if possible. The box will not be wider than charsPerLine.<br/>If set to `false`, the box will have a fixed width of `charsPerLine` |
+| closeOnTheLeft | If set to `true`, the box will be closed on the left side.<br/>If set to `false`, the left side of the box will be left open. |
 | closeOnTheRight | If set to `true`, the box will be closed on the right side.<br/>If set to `false`, the right side of the box will be left open.<br/>Note: many "monospaced" fonts are not fully monospaced so closed boxes might not work properly (i.e. the lengths of the lines won't be the same). In that case you should set this value to `false`. |
 | horizontalPadding | Sets the number of spaces between the text and the left/right sides of the box. Is part of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10, and width of 40 would have 18 spaces left for content. |
 | verticalPadding | Sets the number of newlines between the text and the top/bottom sides of the box. |
@@ -239,27 +240,53 @@ String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
 //
 ```
 
-Box not closed on right:
+Box not closed on right (with fixed box width - a reasonable config when using crappy "monospaced" fonts):
 ```
 String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
     new PrettyBoxConfiguration.Builder()
-            .setHorizontalMargin(10)
-            .setVerticalMargin(1)
-            .setHorizontalPadding(5)
-            .setVerticalPadding(1)
-            .setCharsPerLine(70)
+            .setCharsPerLine(60)
             .setWrapContent(false)
             .setCloseOnTheRight(false)
             .build());
   
 // Result:
-//
-//          ┌───────────────────────────────────────────────────────────
-//          │
-//          │     Number of apples: 5
-//          │     Apple seller name: John Johnson
-//          │     Has green apples: true
-//          │
-//          └───────────────────────────────────────────────────────────
-//          
+// ┌───────────────────────────────────────────────────────────
+// │ Number of apples: 5
+// │ Apple seller name: John Johnson
+// │ Has green apples: true
+// └───────────────────────────────────────────────────────────
+```
+
+
+Box not closed on left:
+```
+String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+    new PrettyBoxConfiguration.Builder()
+            .setWrapContent(true)
+            .setCloseOnTheLeft(false)
+            .build());
+  
+// Result:
+// ─────────────────────────────────┐
+//  Number of apples: 5             │
+//  Apple seller name: John Johnson │
+//  Has green apples: true          │
+// ─────────────────────────────────┘
+```
+
+Box not closed neither on left nor on the right:
+```
+String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+    new PrettyBoxConfiguration.Builder()
+            .setWrapContent(true)
+            .setCloseOnTheLeft(false)
+            .setCloseOnTheRight(false)
+            .build());
+  
+// Result:
+// ─────────────────────────────────
+// Number of apples: 5
+// Apple seller name: John Johnson
+// Has green apples: true
+// ─────────────────────────────────
 ```
