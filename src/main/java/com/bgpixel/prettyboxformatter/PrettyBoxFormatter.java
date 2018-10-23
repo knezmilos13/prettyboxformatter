@@ -24,8 +24,10 @@ public class PrettyBoxFormatter {
                     .setPrefixEveryPrintWithNewline(false)
                     .setCharsPerLine(80)
                     .setWrapContent(true)
-                    .setCloseOnTheLeft(true)
-                    .setCloseOnTheRight(true)
+                    .setBorderLeft(true)
+                    .setBorderRight(true)
+                    .setBorderTop(true)
+                    .setBorderBottom(true) // add helper methods like for margin/padding
                     .setHorizontalPadding(1)
                     .setVerticalPadding(0)
                     .setMargin(0)
@@ -231,15 +233,17 @@ public class PrettyBoxFormatter {
     private void drawTopLine(@NotNull StringBuilder stringBuilder,
                              int lineWidth,
                              @NotNull PrettyBoxConfiguration configuration) {
+        if(!configuration.getBorderTop()) return;
+
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
-        if(configuration.getCloseOnTheLeft())
+        if(configuration.getBorderLeft())
             stringBuilder.append(TOP_LEFT_CORNER);
 
         stringBuilder.append(getDoubleDivider(lineWidth));
 
-        if(configuration.getCloseOnTheRight())
+        if(configuration.getBorderRight())
             stringBuilder.append(TOP_RIGHT_CORNER);
 
         stringBuilder
@@ -257,13 +261,13 @@ public class PrettyBoxFormatter {
             stringBuilder
                     .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
-            if(configuration.getCloseOnTheLeft())
+            if(configuration.getBorderLeft())
                 stringBuilder.append(VERTICAL_LINE);
 
             stringBuilder
                     .append(getHorizontalSpaces(lineWidth));
 
-            if(configuration.getCloseOnTheRight())
+            if(configuration.getBorderRight())
                 stringBuilder.append(VERTICAL_LINE);
 
             stringBuilder
@@ -280,12 +284,12 @@ public class PrettyBoxFormatter {
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
-        if(configuration.getCloseOnTheLeft())
+        if(configuration.getBorderLeft())
             stringBuilder.append(MIDDLE_LEFT_CORNER);
 
         stringBuilder.append(getSingleDivider(lineWidth));
 
-        if(configuration.getCloseOnTheRight())
+        if(configuration.getBorderRight())
             stringBuilder.append(MIDDLE_RIGHT_CORNER);
 
         stringBuilder
@@ -302,7 +306,7 @@ public class PrettyBoxFormatter {
 
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginLeft()));
 
-        if(configuration.getCloseOnTheLeft()) stringBuilder.append(VERTICAL_LINE);
+        if(configuration.getBorderLeft()) stringBuilder.append(VERTICAL_LINE);
 
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getPaddingLeft()))
@@ -312,7 +316,7 @@ public class PrettyBoxFormatter {
         stringBuilder
                 .append(getHorizontalSpaces(rightPadding));
 
-        if(configuration.getCloseOnTheRight()) stringBuilder.append(VERTICAL_LINE);
+        if(configuration.getBorderRight()) stringBuilder.append(VERTICAL_LINE);
 
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginRight()));
 
@@ -323,15 +327,17 @@ public class PrettyBoxFormatter {
     private void drawBottomLine(@NotNull StringBuilder stringBuilder,
                                 int lineWidth,
                                 @NotNull PrettyBoxConfiguration configuration) {
+        if(!configuration.getBorderBottom()) return;
+
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
-        if(configuration.getCloseOnTheLeft())
+        if(configuration.getBorderLeft())
             stringBuilder.append(BOTTOM_LEFT_CORNER);
 
         stringBuilder.append(getDoubleDivider(lineWidth));
 
-        if(configuration.getCloseOnTheRight())
+        if(configuration.getBorderRight())
             stringBuilder.append(BOTTOM_RIGHT_CORNER);
 
         stringBuilder
@@ -346,8 +352,8 @@ public class PrettyBoxFormatter {
      *  large padding, too small width) */
     @SuppressWarnings("ConstantConditions") // @see drawBox
     private int determineMaxContentWidth(@NotNull PrettyBoxConfiguration configuration) {
-        int numSides = (configuration.getCloseOnTheLeft()? 1 : 0)
-                + (configuration.getCloseOnTheRight()? 1 : 0);
+        int numSides = (configuration.getBorderLeft()? 1 : 0)
+                + (configuration.getBorderRight()? 1 : 0);
 
         return configuration.getCharsPerLine()
                 - configuration.getPaddingLeft()
@@ -369,8 +375,8 @@ public class PrettyBoxFormatter {
      *  values if configuration is invalid (e.g. too large margin, too small width) */
     @SuppressWarnings("ConstantConditions") // @see drawBox
     private int determineMaxLineWidth(@NotNull PrettyBoxConfiguration configuration) {
-        int numSides = (configuration.getCloseOnTheLeft()? 1 : 0)
-                + (configuration.getCloseOnTheRight()? 1 : 0);
+        int numSides = (configuration.getBorderLeft()? 1 : 0)
+                + (configuration.getBorderRight()? 1 : 0);
 
         return configuration.getCharsPerLine()
                 - configuration.getMarginLeft()
