@@ -10,29 +10,41 @@ public class PrettyBoxConfiguration {
     @Nullable private final Boolean wrapContent;
     @Nullable private final Boolean closeOnTheLeft;
     @Nullable private final Boolean closeOnTheRight;
-    @Nullable private final Integer horizontalPadding;
-    @Nullable private final Integer verticalPadding;
-    @Nullable private final Integer horizontalMargin;
-    @Nullable private final Integer verticalMargin;
+    @Nullable private final Integer paddingLeft;
+    @Nullable private final Integer paddingRight;
+    @Nullable private final Integer paddingTop;
+    @Nullable private final Integer paddingBottom;
+    @Nullable private final Integer marginLeft;
+    @Nullable private final Integer marginRight;
+    @Nullable private final Integer marginTop;
+    @Nullable private final Integer marginBottom;
 
     private PrettyBoxConfiguration(@Nullable Boolean prefixEveryPrintWithNewline,
                                    @Nullable Integer charsPerLine,
                                    @Nullable Boolean wrapContent,
                                    @Nullable Boolean closeOnTheLeft,
                                    @Nullable Boolean closeOnTheRight,
-                                   @Nullable Integer horizontalPadding,
-                                   @Nullable Integer verticalPadding,
-                                   @Nullable Integer horizontalMargin,
-                                   @Nullable Integer verticalMargin) {
+                                   @Nullable Integer paddingLeft,
+                                   @Nullable Integer paddingRight,
+                                   @Nullable Integer paddingTop,
+                                   @Nullable Integer paddingBottom,
+                                   @Nullable Integer marginLeft,
+                                   @Nullable Integer marginRight,
+                                   @Nullable Integer marginTop,
+                                   @Nullable Integer marginBottom) {
         this.prefixEveryPrintWithNewline = prefixEveryPrintWithNewline;
         this.charsPerLine = charsPerLine;
         this.wrapContent = wrapContent;
         this.closeOnTheLeft = closeOnTheLeft;
         this.closeOnTheRight = closeOnTheRight;
-        this.horizontalPadding = horizontalPadding;
-        this.verticalPadding = verticalPadding;
-        this.horizontalMargin = horizontalMargin;
-        this.verticalMargin = verticalMargin;
+        this.paddingLeft = paddingLeft;
+        this.paddingRight = paddingRight;
+        this.paddingTop = paddingTop;
+        this.paddingBottom = paddingBottom;
+        this.marginLeft = marginLeft;
+        this.marginRight = marginRight;
+        this.marginTop = marginTop;
+        this.marginBottom = marginBottom;
     }
 
     @Nullable public Boolean getPrefixEveryPrintWithNewline() { return prefixEveryPrintWithNewline; }
@@ -40,10 +52,14 @@ public class PrettyBoxConfiguration {
     @Nullable public Boolean getWrapContent() { return wrapContent; }
     @Nullable public Boolean getCloseOnTheLeft() { return closeOnTheLeft; }
     @Nullable public Boolean getCloseOnTheRight() { return closeOnTheRight; }
-    @Nullable public Integer getHorizontalPadding() { return horizontalPadding; }
-    @Nullable public Integer getVerticalPadding() { return verticalPadding; }
-    @Nullable public Integer getHorizontalMargin() { return horizontalMargin; }
-    @Nullable public Integer getVerticalMargin() { return verticalMargin; }
+    @Nullable public Integer getPaddingLeft() { return paddingLeft; }
+    @Nullable public Integer getPaddingRight() { return paddingRight; }
+    @Nullable public Integer getPaddingTop() { return paddingTop; }
+    @Nullable public Integer getPaddingBottom() { return paddingBottom; }
+    @Nullable public Integer getMarginLeft() { return marginLeft; }
+    @Nullable public Integer getMarginRight() { return marginRight; }
+    @Nullable public Integer getMarginTop() { return marginTop; }
+    @Nullable public Integer getMarginBottom() { return marginBottom; }
 
     public static class Builder {
 
@@ -52,10 +68,14 @@ public class PrettyBoxConfiguration {
         @Nullable private Boolean wrapContent;
         @Nullable private Boolean closeOnTheLeft;
         @Nullable private Boolean closeOnTheRight;
-        @Nullable private Integer horizontalPadding;
-        @Nullable private Integer verticalPadding;
-        @Nullable private Integer horizontalMargin;
-        @Nullable private Integer verticalMargin;
+        @Nullable private Integer paddingLeft;
+        @Nullable private Integer paddingRight;
+        @Nullable private Integer paddingTop;
+        @Nullable private Integer paddingBottom;
+        @Nullable private Integer marginLeft;
+        @Nullable private Integer marginRight;
+        @Nullable private Integer marginTop;
+        @Nullable private Integer marginBottom;
 
         /** Creates a Builder by copying all values from the PrettyBoxConfiguration instance */
         @NotNull
@@ -66,10 +86,14 @@ public class PrettyBoxConfiguration {
             builder.setWrapContent(configuration.getWrapContent());
             builder.setCloseOnTheLeft(configuration.getCloseOnTheLeft());
             builder.setCloseOnTheRight(configuration.getCloseOnTheRight());
-            builder.setHorizontalPadding(configuration.getHorizontalPadding());
-            builder.setVerticalPadding(configuration.getVerticalPadding());
-            builder.setHorizontalMargin(configuration.getHorizontalMargin());
-            builder.setVerticalMargin(configuration.getVerticalMargin());
+            builder.setPaddingLeft(configuration.getPaddingLeft());
+            builder.setPaddingRight(configuration.getPaddingRight());
+            builder.setPaddingTop(configuration.getPaddingTop());
+            builder.setPaddingBottom(configuration.getPaddingBottom());
+            builder.setMarginLeft(configuration.getMarginLeft());
+            builder.setMarginRight(configuration.getMarginRight());
+            builder.setMarginTop(configuration.getMarginTop());
+            builder.setMarginBottom(configuration.getMarginBottom());
             return builder;
         }
 
@@ -86,14 +110,22 @@ public class PrettyBoxConfiguration {
                 this.closeOnTheLeft = configuration.getCloseOnTheLeft();
             if(configuration.getCloseOnTheRight() != null)
                 this.closeOnTheRight = configuration.getCloseOnTheRight();
-            if(configuration.getHorizontalPadding() != null)
-                this.horizontalPadding = configuration.getHorizontalPadding();
-            if(configuration.getVerticalPadding() != null)
-                this.verticalPadding = configuration.getVerticalPadding();
-            if(configuration.getHorizontalMargin() != null)
-                this.horizontalMargin = configuration.getHorizontalMargin();
-            if(configuration.getVerticalMargin() != null)
-                this.verticalMargin = configuration.getVerticalMargin();
+            if(configuration.getPaddingLeft() != null)
+                this.paddingLeft = configuration.getPaddingLeft();
+            if(configuration.getPaddingRight() != null)
+                this.paddingRight = configuration.getPaddingRight();
+            if(configuration.getPaddingTop() != null)
+                this.paddingTop = configuration.getPaddingTop();
+            if(configuration.getPaddingBottom() != null)
+                this.paddingBottom = configuration.getPaddingBottom();
+            if(configuration.getMarginLeft() != null)
+                this.marginLeft = configuration.getMarginLeft();
+            if(configuration.getMarginRight() != null)
+                this.marginRight = configuration.getMarginRight();
+            if(configuration.getMarginTop() != null)
+                this.marginTop = configuration.getMarginTop();
+            if(configuration.getMarginBottom() != null)
+                this.marginBottom = configuration.getMarginBottom();
             return this;
         }
 
@@ -146,34 +178,95 @@ public class PrettyBoxConfiguration {
 
         /** Sets the number of spaces between the text and the left/right sides of the box. Is part
          *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,
+         *  and width of 40 would have 18 spaces left for content. */ // TODO
+        @NotNull
+        public Builder setPaddingLeft(@Nullable Integer paddingLeft) {
+            this.paddingLeft = paddingLeft;
+            return this;
+        }
+        @NotNull
+        public Builder setPaddingRight(@Nullable Integer paddingRight) {
+            this.paddingRight = paddingRight;
+            return this;
+        }
+        @NotNull
+        public Builder setPaddingTop(@Nullable Integer paddingTop) {
+            this.paddingTop = paddingTop;
+            return this;
+        }
+        @NotNull
+        public Builder setPaddingBottom(@Nullable Integer paddingBottom) {
+            this.paddingBottom = paddingBottom;
+            return this;
+        }
+        /** Sets the number of spaces between the text and the left/right sides of the box. Is part
+         *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,
          *  and width of 40 would have 18 spaces left for content. */
         @NotNull
         public Builder setHorizontalPadding(@Nullable Integer horizontalPadding) {
-            this.horizontalPadding = horizontalPadding;
+            setPaddingLeft(horizontalPadding);
+            setPaddingRight(horizontalPadding);
             return this;
         }
-
         /** Sets the number of newlines between the text and the top/bottom sides of the box. */
         @NotNull
         public Builder setVerticalPadding(@Nullable Integer verticalPadding) {
-            this.verticalPadding = verticalPadding;
+            setPaddingTop(verticalPadding);
+            setPaddingBottom(verticalPadding);
+            return this;
+        }
+        @NotNull
+        public Builder setPadding(@Nullable Integer padding) {
+            setVerticalPadding(padding);
+            setHorizontalPadding(padding);
             return this;
         }
 
         /** Sets the number of spaces between the box left/right sides and the surrounding elements
          *  (e.g. line start, other boxes). Is part of the box width, e.g. a closed box with edges 1
          *  space wide, horizontal margin of 10, and width of 40 would have 18 spaces left for
+         *  content. */ // TODO
+        @NotNull
+        public Builder setMarginLeft(@Nullable Integer marginLeft) {
+            this.marginLeft = marginLeft;
+            return this;
+        }
+        @NotNull
+        public Builder setMarginRight(@Nullable Integer marginRight) {
+            this.marginRight = marginRight;
+            return this;
+        }
+        @NotNull
+        public Builder setMarginTop(@Nullable Integer marginTop) {
+            this.marginTop = marginTop;
+            return this;
+        }
+        @NotNull
+        public Builder setMarginBottom(@Nullable Integer marginBottom) {
+            this.marginBottom = marginBottom;
+            return this;
+        }
+        /** Sets the number of spaces between the box left/right sides and the surrounding elements
+         *  (e.g. line start, other boxes). Is part of the box width, e.g. a closed box with edges 1
+         *  space wide, horizontal margin of 10, and width of 40 would have 18 spaces left for
          *  content. */
         @NotNull
         public Builder setHorizontalMargin(@Nullable Integer horizontalMargin) {
-            this.horizontalMargin = horizontalMargin;
+            setMarginLeft(horizontalMargin);
+            setMarginRight(horizontalMargin);
             return this;
         }
-
         /** Sets the number of newlines before and after the box is drawn. */
         @NotNull
         public Builder setVerticalMargin(@Nullable Integer verticalMargin) {
-            this.verticalMargin = verticalMargin;
+            setMarginTop(verticalMargin);
+            setMarginBottom(verticalMargin);
+            return this;
+        }
+        @NotNull
+        public Builder setMargin(@Nullable Integer margin) {
+            setVerticalMargin(margin);
+            setHorizontalMargin(margin);
             return this;
         }
 
@@ -183,12 +276,9 @@ public class PrettyBoxConfiguration {
                     prefixEveryPrintWithNewline,
                     charsPerLine,
                     wrapContent,
-                    closeOnTheLeft,
-                    closeOnTheRight,
-                    horizontalPadding,
-                    verticalPadding,
-                    horizontalMargin,
-                    verticalMargin);
+                    closeOnTheLeft, closeOnTheRight,
+                    paddingLeft, paddingRight, paddingTop, paddingBottom,
+                    marginLeft, marginRight, marginTop, marginBottom);
         }
 
     }

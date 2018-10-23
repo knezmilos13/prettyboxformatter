@@ -151,11 +151,11 @@ public class FormatTest {
 
     private static final String test008expectedResult =
             NLN +
-            "          ┌─────────────────────────────────┐" + NLN +
-            "          │ Number of apples: 5             │" + NLN +
-            "          │ Apple seller name: John Johnson │" + NLN +
-            "          │ Has green apples: true          │" + NLN +
-            "          └─────────────────────────────────┘" + NLN;
+            "          ┌─────────────────────────────────┐          " + NLN +
+            "          │ Number of apples: 5             │          " + NLN +
+            "          │ Apple seller name: John Johnson │          " + NLN +
+            "          │ Has green apples: true          │          " + NLN +
+            "          └─────────────────────────────────┘          " + NLN;
     @Test
     public void _008_margin() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
@@ -193,9 +193,9 @@ public class FormatTest {
 
     private static final String test010expectedResult =
             "┌───────────────────────────────────────────────────────────────────────────────" + NLN +
-            "│ Number of apples: 5" + NLN +
-            "│ Apple seller name: John Johnson" + NLN +
-            "│ Has green apples: true" + NLN +
+            "│ Number of apples: 5                                                           " + NLN +
+            "│ Apple seller name: John Johnson                                               " + NLN +
+            "│ Has green apples: true                                                        " + NLN +
             "└───────────────────────────────────────────────────────────────────────────────";
     @Test
     public void _010_notClosedOnRight() {
@@ -227,9 +227,9 @@ public class FormatTest {
 
     private static final String test012expectedResult =
             "─────────────────────────────────" + NLN +
-            " Number of apples: 5" + NLN +
-            " Apple seller name: John Johnson" + NLN +
-            " Has green apples: true" + NLN +
+            " Number of apples: 5             " + NLN +
+            " Apple seller name: John Johnson " + NLN +
+            " Has green apples: true          " + NLN +
             "─────────────────────────────────";
     @Test
     public void _012_notClosedLeftNorRight() {
@@ -240,6 +240,28 @@ public class FormatTest {
                         .setCloseOnTheRight(false)
                         .build());
         Assert.assertEquals(test012expectedResult, result);
+        System.out.println(result);
+    }
+
+
+
+    private static final String test010expectedResultx =
+            "┌───────────────────────────────────────────────────────────────────────────────" + NLN +
+                    "│ Number of apples: 5                                                           " + NLN +
+                    "│ Apple seller name: John Johnson                                               " + NLN +
+                    "│ Has green apples: true                                                        " + NLN +
+                    "└───────────────────────────────────────────────────────────────────────────────";
+    @Test
+    public void _010_nsdgsdfotClosedOnRight() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setWrapContent(false)
+                        .setCloseOnTheRight(true)
+                        .setCharsPerLine(50)
+                        .setPaddingRight(5)
+                        .setMarginRight(5)
+                        .build());
+//        Assert.assertEquals(test010expectedResult, result);
         System.out.println(result);
     }
 

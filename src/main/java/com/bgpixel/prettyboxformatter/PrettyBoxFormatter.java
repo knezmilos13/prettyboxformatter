@@ -28,8 +28,7 @@ public class PrettyBoxFormatter {
                     .setCloseOnTheRight(true)
                     .setHorizontalPadding(1)
                     .setVerticalPadding(0)
-                    .setHorizontalMargin(0)
-                    .setVerticalMargin(0)
+                    .setMargin(0)
                     .build();
 
     private static final String INVALID_PER_CALL_CONFIGURATION_MESSAGE =
@@ -167,7 +166,7 @@ public class PrettyBoxFormatter {
                 longestContentWidth = Math.max(line.length(), longestContentWidth);
             taskData.setContentWidth(longestContentWidth);
             taskData.setLineWidth(taskData.getContentWidth()
-                    + 2 * configuration.getHorizontalPadding());
+                    + configuration.getPaddingLeft() + configuration.getPaddingRight());
         } else {
             taskData.setContentWidth(maxContentWidth);
             taskData.setLineWidth(maxLineWidth);
@@ -175,7 +174,6 @@ public class PrettyBoxFormatter {
 
         return taskData;
     }
-
 
     // stuff is nullable, but we make sure the default settings provide fallback non-null values
     @SuppressWarnings("ConstantConditions")
@@ -192,22 +190,24 @@ public class PrettyBoxFormatter {
 
         if (configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(NEWLINE);
 
-        drawVerticalMargin(stringBuilder, configuration.getVerticalMargin());
+        drawVerticalMargin(stringBuilder, configuration.getMarginTop());
 
         drawTopLine(stringBuilder, taskData.getLineWidth(), configuration);
 
-        drawVerticalPadding(stringBuilder, taskData.getLineWidth(), configuration);
+        drawVerticalPadding(stringBuilder, configuration.getPaddingTop(),
+                taskData.getLineWidth(), configuration);
 
         for (String line : taskData.getLines()) {
             if (line.length() == 0) drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
             else drawContentLine(stringBuilder, line, taskData.getContentWidth(), configuration);
         }
 
-        drawVerticalPadding(stringBuilder, taskData.getLineWidth(), configuration);
+        drawVerticalPadding(stringBuilder, configuration.getPaddingBottom(),
+                taskData.getLineWidth(), configuration);
 
         drawBottomLine(stringBuilder, taskData.getLineWidth(), configuration);
 
-        drawVerticalMargin(stringBuilder, configuration.getVerticalMargin());
+        drawVerticalMargin(stringBuilder, configuration.getMarginBottom());
 
         return stringBuilder.toString();
     }
@@ -232,7 +232,7 @@ public class PrettyBoxFormatter {
                              int lineWidth,
                              @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
-                .append(getPadding(configuration.getHorizontalMargin()));
+                .append(getPadding(configuration.getMarginLeft()));
 
         if(configuration.getCloseOnTheLeft())
             stringBuilder.append(TOP_LEFT_CORNER);
@@ -242,24 +242,32 @@ public class PrettyBoxFormatter {
         if(configuration.getCloseOnTheRight())
             stringBuilder.append(TOP_RIGHT_CORNER);
 
+        stringBuilder
+                .append(getPadding(configuration.getMarginRight()));
+
         stringBuilder.append(NEWLINE);
     }
 
     @SuppressWarnings("ConstantConditions") // @see drawBox
     private void drawVerticalPadding(@NotNull StringBuilder stringBuilder,
+                                     int padding,
                                      int lineWidth,
                                      @NotNull PrettyBoxConfiguration configuration) {
-        for(int i = 0; i < configuration.getVerticalPadding(); i++) {
+        for(int i = 0; i < padding; i++) {
             stringBuilder
-                    .append(getPadding(configuration.getHorizontalMargin()));
+                    .append(getPadding(configuration.getMarginLeft()));
 
             if(configuration.getCloseOnTheLeft())
                 stringBuilder.append(VERTICAL_LINE);
 
+            stringBuilder
+                    .append(getPadding(lineWidth));
+
             if(configuration.getCloseOnTheRight())
-                stringBuilder
-                        .append(getPadding(lineWidth)) // No padding if not closing on the right
-                        .append(VERTICAL_LINE);
+                stringBuilder.append(VERTICAL_LINE);
+
+            stringBuilder
+                    .append(getPadding(configuration.getMarginRight()));
 
             stringBuilder.append(NEWLINE);
         }
@@ -270,7 +278,7 @@ public class PrettyBoxFormatter {
                                int lineWidth,
                                @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
-                .append(getPadding(configuration.getHorizontalMargin()));
+                .append(getPadding(configuration.getMarginLeft()));
 
         if(configuration.getCloseOnTheLeft())
             stringBuilder.append(MIDDLE_LEFT_CORNER);
@@ -280,6 +288,9 @@ public class PrettyBoxFormatter {
         if(configuration.getCloseOnTheRight())
             stringBuilder.append(MIDDLE_RIGHT_CORNER);
 
+        stringBuilder
+                .append(getPadding(configuration.getMarginRight()));
+
         stringBuilder.append(NEWLINE);
     }
 
@@ -288,23 +299,22 @@ public class PrettyBoxFormatter {
                                  @NotNull String line,
                                  int contentWidth,
                                  @NotNull PrettyBoxConfiguration configuration) {
-        stringBuilder
-                .append(getPadding(configuration.getHorizontalMargin()));
 
-        if(configuration.getCloseOnTheLeft())
-            stringBuilder.append(VERTICAL_LINE);
+        stringBuilder.append(getPadding(configuration.getMarginLeft()));
+
+        if(configuration.getCloseOnTheLeft()) stringBuilder.append(VERTICAL_LINE);
 
         stringBuilder
-                .append(getPadding(configuration.getHorizontalPadding()))
+                .append(getPadding(configuration.getPaddingLeft()))
                 .append(line);
 
-        if(configuration.getCloseOnTheRight()) {
-            // No need for right padding if not closing the right side
-            int rightPadding = configuration.getHorizontalPadding() + (contentWidth - line.length());
-            stringBuilder
-                    .append(getPadding(rightPadding))
-                    .append(VERTICAL_LINE);
-        }
+        int rightPadding = configuration.getPaddingRight() + (contentWidth - line.length());
+        stringBuilder
+                .append(getPadding(rightPadding));
+
+        if(configuration.getCloseOnTheRight()) stringBuilder.append(VERTICAL_LINE);
+
+        stringBuilder.append(getPadding(configuration.getMarginRight()));
 
         stringBuilder.append(NEWLINE);
     }
@@ -314,7 +324,7 @@ public class PrettyBoxFormatter {
                                 int lineWidth,
                                 @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
-                .append(getPadding(configuration.getHorizontalMargin()));
+                .append(getPadding(configuration.getMarginLeft()));
 
         if(configuration.getCloseOnTheLeft())
             stringBuilder.append(BOTTOM_LEFT_CORNER);
@@ -323,6 +333,9 @@ public class PrettyBoxFormatter {
 
         if(configuration.getCloseOnTheRight())
             stringBuilder.append(BOTTOM_RIGHT_CORNER);
+
+        stringBuilder
+                .append(getPadding(configuration.getMarginRight()));
     }
 
 
@@ -337,8 +350,10 @@ public class PrettyBoxFormatter {
                 + (configuration.getCloseOnTheRight()? 1 : 0);
 
         return configuration.getCharsPerLine()
-                - 2*configuration.getHorizontalPadding()
-                - 2*configuration.getHorizontalMargin()
+                - configuration.getPaddingLeft()
+                - configuration.getPaddingRight()
+                - configuration.getMarginLeft()
+                - configuration.getMarginRight()
                 - numSides;
     }
 
@@ -358,7 +373,8 @@ public class PrettyBoxFormatter {
                 + (configuration.getCloseOnTheRight()? 1 : 0);
 
         return configuration.getCharsPerLine()
-                - 2*configuration.getHorizontalMargin()
+                - configuration.getMarginLeft()
+                - configuration.getMarginRight()
                 - numSides;
     }
 
