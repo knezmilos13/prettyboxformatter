@@ -203,6 +203,24 @@ public class PrettyBoxConfiguration {
             this.borderBottom = borderBottom;
             return this;
         }
+        @NotNull
+        public Builder setVerticalBorders(@Nullable Boolean verticalBorders) {
+            setBorderLeft(verticalBorders);
+            setBorderRight(verticalBorders);
+            return this;
+        }
+        @NotNull
+        public Builder setHorizontalBorders(@Nullable Boolean horizontalBorders) {
+            setBorderTop(horizontalBorders);
+            setBorderBottom(horizontalBorders);
+            return this;
+        }
+        @NotNull
+        public Builder setBorders(@Nullable Boolean borders) {
+            setVerticalBorders(borders);
+            setHorizontalBorders(borders);
+            return this;
+        }
 
         /** Sets the number of spaces between the text and the left/right sides of the box. Is part
          *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,

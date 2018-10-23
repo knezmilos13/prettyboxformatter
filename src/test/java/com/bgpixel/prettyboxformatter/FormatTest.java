@@ -232,30 +232,43 @@ public class FormatTest {
             " Has green apples: true          " + NLN +
             "─────────────────────────────────";
     @Test
-    public void _012_notClosedLeftNorRight() {
+    public void _012_noVerticalBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setWrapContent(true)
-                        .setBorderLeft(false)
-                        .setBorderRight(false)
+                        .setVerticalBorders(false)
                         .build());
         Assert.assertEquals(test012expectedResult, result);
         System.out.println(result);
     }
 
     private static final String test013expectedResult =
-                    "│ Number of apples: 5             │" + NLN +
-                    "│ Apple seller name: John Johnson │" + NLN +
-                    "│ Has green apples: true          │" + NLN;
+            "│ Number of apples: 5             │" + NLN +
+            "│ Apple seller name: John Johnson │" + NLN +
+            "│ Has green apples: true          │";
     @Test
-    public void _013_notClosedTopNorBottom() {
+    public void _013_noHorizontalBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setWrapContent(true)
-                        .setBorderTop(false)
-                        .setBorderBottom(false)
+                        .setHorizontalBorders(false)
                         .build());
         Assert.assertEquals(test013expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test014expectedResult =
+            " Number of apples: 5             " + NLN +
+            " Apple seller name: John Johnson " + NLN +
+            " Has green apples: true          ";
+    @Test
+    public void _014_noBorders() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setWrapContent(true)
+                        .setBorders(false)
+                        .build());
+        Assert.assertEquals(test014expectedResult, result);
         System.out.println(result);
     }
 
