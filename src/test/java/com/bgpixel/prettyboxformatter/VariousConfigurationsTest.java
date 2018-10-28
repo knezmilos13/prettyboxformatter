@@ -194,7 +194,6 @@ public class VariousConfigurationsTest {
     public void _010_notClosedOnLeft() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
-                        .setWrapContent(true)
                         .setBorderLeft(false)
                         .build());
         Assert.assertEquals(test010expectedResult, result);
@@ -211,7 +210,6 @@ public class VariousConfigurationsTest {
     public void _011_noVerticalBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
-                        .setWrapContent(true)
                         .setVerticalBorders(false)
                         .build());
         Assert.assertEquals(test011expectedResult, result);
@@ -226,7 +224,6 @@ public class VariousConfigurationsTest {
     public void _012_noHorizontalBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
-                        .setWrapContent(true)
                         .setHorizontalBorders(false)
                         .build());
         Assert.assertEquals(test012expectedResult, result);
@@ -241,7 +238,6 @@ public class VariousConfigurationsTest {
     public void _013_noBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
-                        .setWrapContent(true)
                         .setBorders(false)
                         .build());
         Assert.assertEquals(test013expectedResult, result);
