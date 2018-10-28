@@ -3,6 +3,7 @@ package com.bgpixel.prettyboxformatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("WeakerAccess") // this is a library, and this class is part of library interface
 public class PrettyBoxConfiguration {
 
     @Nullable private final Boolean prefixEveryPrintWithNewline;
@@ -69,6 +70,7 @@ public class PrettyBoxConfiguration {
     @Nullable public Integer getMarginTop() { return marginTop; }
     @Nullable public Integer getMarginBottom() { return marginBottom; }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static class Builder {
 
         @Nullable private Boolean prefixEveryPrintWithNewline = false;
@@ -173,17 +175,12 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** If set to true, the box will be closed on the left side.<br/>
-         *  If set to false, the left side of the box will be left open. */
         @NotNull
         public Builder setBorderLeft(@Nullable Boolean borderLeft) {
             this.borderLeft = borderLeft;
             return this;
         }
-
-        /** If set to true, the box will be closed on the right side.<br/>
-         *  If set to false, the right side of the box will be left open.<br/>
-         *  Note: many "monospaced" fonts are not fully monospaced so closed boxes might not work
+        /** Note: many "monospaced" fonts are not fully monospaced so closed boxes might not work
          *  properly (i.e. the lengths of the lines won't be the same). In that case you should set
          *  this value to false. */
         @NotNull
@@ -191,30 +188,31 @@ public class PrettyBoxConfiguration {
             this.borderRight = borderRight;
             return this;
         }
-
         @NotNull
         public Builder setBorderTop(@Nullable Boolean borderTop) {
             this.borderTop = borderTop;
             return this;
         }
-        // TODO doc, readme
         @NotNull
         public Builder setBorderBottom(@Nullable Boolean borderBottom) {
             this.borderBottom = borderBottom;
             return this;
         }
+        /** Shorthand for setting both left and right border */
         @NotNull
         public Builder setVerticalBorders(@Nullable Boolean verticalBorders) {
             setBorderLeft(verticalBorders);
             setBorderRight(verticalBorders);
             return this;
         }
+        /** Shorthand for setting both top and bottom border */
         @NotNull
         public Builder setHorizontalBorders(@Nullable Boolean horizontalBorders) {
             setBorderTop(horizontalBorders);
             setBorderBottom(horizontalBorders);
             return this;
         }
+        /** Shorthand for setting all borders with a single call */
         @NotNull
         public Builder setBorders(@Nullable Boolean borders) {
             setVerticalBorders(borders);
@@ -222,9 +220,6 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** Sets the number of spaces between the text and the left/right sides of the box. Is part
-         *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,
-         *  and width of 40 would have 18 spaces left for content. */ // TODO
         @NotNull
         public Builder setPaddingLeft(@Nullable Integer paddingLeft) {
             this.paddingLeft = paddingLeft;
@@ -245,22 +240,21 @@ public class PrettyBoxConfiguration {
             this.paddingBottom = paddingBottom;
             return this;
         }
-        /** Sets the number of spaces between the text and the left/right sides of the box. Is part
-         *  of the box width, e.g. a closed box with edges 1 space wide, horizontal padding of 10,
-         *  and width of 40 would have 18 spaces left for content. */
+        /** Shorthand for setting both left and right padding */
         @NotNull
         public Builder setHorizontalPadding(@Nullable Integer horizontalPadding) {
             setPaddingLeft(horizontalPadding);
             setPaddingRight(horizontalPadding);
             return this;
         }
-        /** Sets the number of newlines between the text and the top/bottom sides of the box. */
+        /** Shorthand for setting both top and bottom padding */
         @NotNull
         public Builder setVerticalPadding(@Nullable Integer verticalPadding) {
             setPaddingTop(verticalPadding);
             setPaddingBottom(verticalPadding);
             return this;
         }
+        /** Shorthand for setting all paddings with a single call. */
         @NotNull
         public Builder setPadding(@Nullable Integer padding) {
             setVerticalPadding(padding);
@@ -268,10 +262,6 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** Sets the number of spaces between the box left/right sides and the surrounding elements
-         *  (e.g. line start, other boxes). Is part of the box width, e.g. a closed box with edges 1
-         *  space wide, horizontal margin of 10, and width of 40 would have 18 spaces left for
-         *  content. */ // TODO
         @NotNull
         public Builder setMarginLeft(@Nullable Integer marginLeft) {
             this.marginLeft = marginLeft;
@@ -292,23 +282,21 @@ public class PrettyBoxConfiguration {
             this.marginBottom = marginBottom;
             return this;
         }
-        /** Sets the number of spaces between the box left/right sides and the surrounding elements
-         *  (e.g. line start, other boxes). Is part of the box width, e.g. a closed box with edges 1
-         *  space wide, horizontal margin of 10, and width of 40 would have 18 spaces left for
-         *  content. */
+        /** Shorthand for setting both left and right margin. */
         @NotNull
         public Builder setHorizontalMargin(@Nullable Integer horizontalMargin) {
             setMarginLeft(horizontalMargin);
             setMarginRight(horizontalMargin);
             return this;
         }
-        /** Sets the number of newlines before and after the box is drawn. */
+        /** Shorthand for setting both top and bottom margin */
         @NotNull
         public Builder setVerticalMargin(@Nullable Integer verticalMargin) {
             setMarginTop(verticalMargin);
             setMarginBottom(verticalMargin);
             return this;
         }
+        /** Shorthand for setting all margins with a single call. */
         @NotNull
         public Builder setMargin(@Nullable Integer margin) {
             setVerticalMargin(margin);

@@ -109,7 +109,7 @@ public class PrettyBoxFormatter {
     public String format(@NotNull List<String> lines) {
         FormattingTaskData taskData =
                 prepareFormattingTaskData(lines, configuration, maxContentWidth, maxLineWidth);
-        if(invalidConfiguration) taskData.setPrintInvalidInstanceLevelConfigMessage(true);
+        if(invalidConfiguration) taskData.markPrintInvalidInstanceLevelConfigMessage();
         return drawBox(taskData, configuration);
     }
 
@@ -124,25 +124,25 @@ public class PrettyBoxFormatter {
                         .applyFromInstance(configuration)
                         .build();
 
-        boolean invalidPerCallConfiguration = !validateConfiguration(mergedConfig);
+        boolean validPerCallConfiguration = validateConfiguration(mergedConfig);
 
         PrettyBoxConfiguration configurationToUse;
         int maxContentWidth, maxLineWidth;
-        if(invalidPerCallConfiguration) {
+        if(validPerCallConfiguration) {
+            configurationToUse = mergedConfig;
+            maxContentWidth = determineMaxContentWidth(configurationToUse);
+            maxLineWidth = determineMaxLineWidth(configurationToUse);
+        } else {
             // Note: if this.invalidConfiguration is true, this.configuration has the valid fallback
             configurationToUse = this.configuration;
             maxContentWidth = this.maxContentWidth;
             maxLineWidth = this.maxLineWidth;
-        } else {
-            configurationToUse = mergedConfig;
-            maxContentWidth = determineMaxContentWidth(configurationToUse);
-            maxLineWidth = determineMaxLineWidth(configurationToUse);
         }
 
         FormattingTaskData taskData =
                 prepareFormattingTaskData(lines, configurationToUse, maxContentWidth, maxLineWidth);
-        if(invalidConfiguration) taskData.setPrintInvalidInstanceLevelConfigMessage(true);
-        if(invalidPerCallConfiguration) taskData.setPrintInvalidPerCallConfigMessage(true);
+        if(invalidConfiguration) taskData.markPrintInvalidInstanceLevelConfigMessage();
+        if(!validPerCallConfiguration) taskData.markPrintInvalidPerCallConfigMessage();
 
         return drawBox(taskData, configurationToUse);
     }

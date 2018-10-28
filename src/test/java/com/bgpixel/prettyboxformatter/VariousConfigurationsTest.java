@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FormatTest {
+public class VariousConfigurationsTest {
 
     private static final String NLN = System.getProperty("line.separator");
 
-    @Rule public TestName testNameRule = new TestName();
+    @Rule public final TestName testNameRule = new TestName();
 
     private static final SimpleBoxableObject SIMPLE_BOXABLE_OBJECT =
             new SimpleBoxableObject(5, "John Johnson", true);
@@ -23,8 +23,8 @@ public class FormatTest {
     @Before
     public void before() {
         pbFormatter = new PrettyBoxFormatter();
-        System.out.println("");
-        System.out.println("");
+        System.out.println();
+        System.out.println();
         System.out.println("Test: " + testNameRule.getMethodName());
     }
 
@@ -168,107 +168,83 @@ public class FormatTest {
     }
 
     private static final String test009expectedResult =
-            "┌─────────────────────────────────────────┐" + NLN +
-            "│                                         │" + NLN +
-            "│     Number of apples: 5                 │" + NLN +
-            "│     Apple seller name: John Johnson     │" + NLN +
-            "│     Has green apples: true              │" + NLN +
-            "│                                         │" + NLN +
-            "└─────────────────────────────────────────┘";
-    @Test
-    public void _009_globalConfigWithPerCallConfig() {
-        pbFormatter.setConfiguration(
-                new PrettyBoxConfiguration.Builder()
-                        .setHorizontalMargin(10)
-                        .setVerticalMargin(1)
-                        .build());
-        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
-                new PrettyBoxConfiguration.Builder()
-                        .setHorizontalPadding(5)
-                        .setVerticalPadding(1)
-                        .build());
-        Assert.assertEquals(test009expectedResult, result);
-        System.out.println(result);
-    }
-
-    private static final String test010expectedResult =
             "┌───────────────────────────────────────────────────────────────────────────────" + NLN +
             "│ Number of apples: 5                                                           " + NLN +
             "│ Apple seller name: John Johnson                                               " + NLN +
             "│ Has green apples: true                                                        " + NLN +
             "└───────────────────────────────────────────────────────────────────────────────";
     @Test
-    public void _010_notClosedOnRight() {
+    public void _009_notClosedOnRight() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setWrapContent(false)
                         .setBorderRight(false)
                         .build());
-        Assert.assertEquals(test010expectedResult, result);
+        Assert.assertEquals(test009expectedResult, result);
         System.out.println(result);
     }
 
-    private static final String test011expectedResult =
+    private static final String test010expectedResult =
             "─────────────────────────────────┐" + NLN +
             " Number of apples: 5             │" + NLN +
             " Apple seller name: John Johnson │" + NLN +
             " Has green apples: true          │" + NLN +
             "─────────────────────────────────┘";
     @Test
-    public void _011_notClosedOnLeft() {
+    public void _010_notClosedOnLeft() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setWrapContent(true)
                         .setBorderLeft(false)
                         .build());
-        Assert.assertEquals(test011expectedResult, result);
+        Assert.assertEquals(test010expectedResult, result);
         System.out.println(result);
     }
 
-    private static final String test012expectedResult =
+    private static final String test011expectedResult =
             "─────────────────────────────────" + NLN +
             " Number of apples: 5             " + NLN +
             " Apple seller name: John Johnson " + NLN +
             " Has green apples: true          " + NLN +
             "─────────────────────────────────";
     @Test
-    public void _012_noVerticalBorders() {
+    public void _011_noVerticalBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setWrapContent(true)
                         .setVerticalBorders(false)
+                        .build());
+        Assert.assertEquals(test011expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test012expectedResult =
+            "│ Number of apples: 5             │" + NLN +
+            "│ Apple seller name: John Johnson │" + NLN +
+            "│ Has green apples: true          │";
+    @Test
+    public void _012_noHorizontalBorders() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setWrapContent(true)
+                        .setHorizontalBorders(false)
                         .build());
         Assert.assertEquals(test012expectedResult, result);
         System.out.println(result);
     }
 
     private static final String test013expectedResult =
-            "│ Number of apples: 5             │" + NLN +
-            "│ Apple seller name: John Johnson │" + NLN +
-            "│ Has green apples: true          │";
-    @Test
-    public void _013_noHorizontalBorders() {
-        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
-                new PrettyBoxConfiguration.Builder()
-                        .setWrapContent(true)
-                        .setHorizontalBorders(false)
-                        .build());
-        Assert.assertEquals(test013expectedResult, result);
-        System.out.println(result);
-    }
-
-    private static final String test014expectedResult =
             " Number of apples: 5             " + NLN +
             " Apple seller name: John Johnson " + NLN +
             " Has green apples: true          ";
     @Test
-    public void _014_noBorders() {
+    public void _013_noBorders() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
                         .setWrapContent(true)
                         .setBorders(false)
                         .build());
-        Assert.assertEquals(test014expectedResult, result);
+        Assert.assertEquals(test013expectedResult, result);
         System.out.println(result);
     }
 

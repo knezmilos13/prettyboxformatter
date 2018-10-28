@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 class JavaUtil {
 
+    @NotNull
     static String join(@NotNull CharSequence delimiter, @NotNull Object ... tokens) {
         StringBuilder sb = new StringBuilder();
         boolean firstTime = true;
@@ -21,6 +22,7 @@ class JavaUtil {
         return sb.toString();
     }
 
+    @NotNull
     static String join(@NotNull CharSequence delimiter, @NotNull Iterable tokens) {
         StringBuilder sb = new StringBuilder();
         Iterator<?> it = tokens.iterator();
