@@ -159,12 +159,12 @@ public class PrettyBoxFormatter {
             int maxLineWidth) {
 
         FormattingTaskData taskData = new FormattingTaskData();
-        taskData.setLines(splitLinesToFitBox(lines, maxContentWidth));
+        taskData.setContentLines(splitLinesToFitBox(lines, maxContentWidth));
 
         // If wrap content is TRUE, make the box as wide as the longest line we have.
         if (configuration.getWrapContent()) {
             int longestContentWidth = 0;
-            for (String line : taskData.getLines())
+            for (String line : taskData.getContentLines())
                 longestContentWidth = Math.max(line.length(), longestContentWidth);
             taskData.setContentWidth(longestContentWidth);
             taskData.setLineWidth(taskData.getContentWidth()
@@ -183,35 +183,61 @@ public class PrettyBoxFormatter {
     private String drawBox(@NotNull FormattingTaskData taskData,
                            @NotNull PrettyBoxConfiguration configuration) {
 
+        ArrayList<String> lines = new ArrayList<>();
+
+        // Optimization. Set length to 0 before every use.
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(invalidConfiguration)
-            stringBuilder.append(INVALID_PER_CALL_CONFIGURATION_MESSAGE).append(NEWLINE);
-        if(invalidConfiguration)
-            stringBuilder.append(INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE).append(NEWLINE);
+        // Terminology note: "draw" methods take StringBuilder and "draw" into it. "Generate"
+        // methods generate and return a list of Strings (lines to be output). They also take
+        // StringBuilder for optimization purposes, but its content after the call is irrelevant
 
-        if (configuration.getPrefixEveryPrintWithNewline()) stringBuilder.append(NEWLINE);
+        if(invalidConfiguration) lines.add(INVALID_PER_CALL_CONFIGURATION_MESSAGE);
+        if(invalidConfiguration) lines.add(INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE);
 
-        drawVerticalSpaces(stringBuilder, configuration.getMarginTop());
+        if(configuration.getPrefixEveryPrintWithNewline()) lines.add("");
 
-        drawTopLine(stringBuilder, taskData.getLineWidth(), configuration);
+        if(configuration.getMarginTop() != 0)
+            lines.addAll(generateVerticalSpaces(configuration.getMarginTop()));
 
-        drawVerticalPadding(stringBuilder, configuration.getPaddingTop(),
-                taskData.getLineWidth(), configuration);
-
-        for (String line : taskData.getLines()) {
-            if (line.length() == 0) drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
-            else drawContentLine(stringBuilder, line, taskData.getContentWidth(), configuration);
+        if(configuration.getBorderTop()) {
+            stringBuilder.setLength(0);
+            drawOuterLine(true, stringBuilder, taskData.getLineWidth(), configuration);
+            lines.add(stringBuilder.toString());
         }
 
-        drawVerticalPadding(stringBuilder, configuration.getPaddingBottom(),
-                taskData.getLineWidth(), configuration);
+        if(configuration.getPaddingTop() != 0) {
+            stringBuilder.setLength(0);
+            lines.addAll(generateVerticalPadding(stringBuilder, configuration.getPaddingTop(),
+                    taskData.getLineWidth(), configuration));
+        }
 
-        drawBottomLine(stringBuilder, taskData.getLineWidth(), configuration);
+        List<String> contentLines = taskData.getContentLines();
+        for (String contentLine : contentLines) {
+            stringBuilder.setLength(0);
+            if (contentLine.length() == 0)
+                drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
+            else
+                drawContentLine(stringBuilder, contentLine, taskData.getContentWidth(), configuration);
+            lines.add(stringBuilder.toString());
+        }
 
-        drawVerticalSpaces(stringBuilder, configuration.getMarginBottom());
+        if(configuration.getPaddingBottom() != 0) {
+            stringBuilder.setLength(0);
+            lines.addAll(generateVerticalPadding(stringBuilder, configuration.getPaddingBottom(),
+                    taskData.getLineWidth(), configuration));
+        }
 
-        return stringBuilder.toString();
+        if(configuration.getBorderBottom()) {
+            stringBuilder.setLength(0);
+            drawOuterLine(false, stringBuilder, taskData.getLineWidth(), configuration);
+            lines.add(stringBuilder.toString());
+        }
+
+        if(configuration.getMarginBottom() != 0)
+            lines.addAll(generateVerticalSpaces(configuration.getMarginBottom()));
+
+        return JavaUtil.join(NEWLINE, lines);
     }
 
     @NotNull
@@ -224,40 +250,43 @@ public class PrettyBoxFormatter {
         return splitLines;
     }
 
-    private void drawVerticalSpaces(@NotNull StringBuilder stringBuilder,
-                                    int verticalMargin) {
-        for(int i = 0; i < verticalMargin; i++) stringBuilder.append(NEWLINE);
+    @NotNull
+    private List<String> generateVerticalSpaces(int verticalMargin) {
+        List<String> lines = new ArrayList<>();
+        for(int i = 0; i < verticalMargin; i++) lines.add("");
+        return lines;
     }
 
+    /** Draws a top or bottom outer line (i.e. top or bottom border). */
     @SuppressWarnings("ConstantConditions") // @see drawBox
-    private void drawTopLine(@NotNull StringBuilder stringBuilder,
-                             int lineWidth,
-                             @NotNull PrettyBoxConfiguration configuration) {
-        if(!configuration.getBorderTop()) return;
-
-        stringBuilder
-                .append(getHorizontalSpaces(configuration.getMarginLeft()));
+    private void drawOuterLine(boolean top,
+                                 @NotNull StringBuilder stringBuilder,
+                                 int lineWidth,
+                                 @NotNull PrettyBoxConfiguration configuration) {
+        stringBuilder.append(getHorizontalSpaces(configuration.getMarginLeft()));
 
         if(configuration.getBorderLeft())
-            stringBuilder.append(TOP_LEFT_CORNER);
+            stringBuilder.append(top? TOP_LEFT_CORNER : BOTTOM_LEFT_CORNER);
 
         stringBuilder.append(getDoubleDivider(lineWidth));
 
         if(configuration.getBorderRight())
-            stringBuilder.append(TOP_RIGHT_CORNER);
+            stringBuilder.append(top? TOP_RIGHT_CORNER : BOTTOM_RIGHT_CORNER);
 
-        stringBuilder
-                .append(getHorizontalSpaces(configuration.getMarginRight()));
-
-        stringBuilder.append(NEWLINE);
+        stringBuilder.append(getHorizontalSpaces(configuration.getMarginRight()));
     }
 
     @SuppressWarnings("ConstantConditions") // @see drawBox
-    private void drawVerticalPadding(@NotNull StringBuilder stringBuilder,
-                                     int padding,
-                                     int lineWidth,
-                                     @NotNull PrettyBoxConfiguration configuration) {
+    @NotNull
+    private List<String> generateVerticalPadding(@NotNull StringBuilder stringBuilder,
+                                                 int padding,
+                                                 int lineWidth,
+                                                 @NotNull PrettyBoxConfiguration configuration) {
+        List<String> lines = new ArrayList<>();
+
         for(int i = 0; i < padding; i++) {
+            stringBuilder.setLength(0);
+
             stringBuilder
                     .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
@@ -273,8 +302,10 @@ public class PrettyBoxFormatter {
             stringBuilder
                     .append(getHorizontalSpaces(configuration.getMarginRight()));
 
-            stringBuilder.append(NEWLINE);
+            lines.add(stringBuilder.toString());
         }
+
+        return lines;
     }
 
     @SuppressWarnings("ConstantConditions") // @see drawBox
@@ -294,8 +325,6 @@ public class PrettyBoxFormatter {
 
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getMarginRight()));
-
-        stringBuilder.append(NEWLINE);
     }
 
     @SuppressWarnings("ConstantConditions") // @see drawBox
@@ -319,29 +348,6 @@ public class PrettyBoxFormatter {
         if(configuration.getBorderRight()) stringBuilder.append(VERTICAL_LINE);
 
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginRight()));
-
-        stringBuilder.append(NEWLINE);
-    }
-
-    @SuppressWarnings("ConstantConditions") // @see drawBox
-    private void drawBottomLine(@NotNull StringBuilder stringBuilder,
-                                int lineWidth,
-                                @NotNull PrettyBoxConfiguration configuration) {
-        if(!configuration.getBorderBottom()) return;
-
-        stringBuilder
-                .append(getHorizontalSpaces(configuration.getMarginLeft()));
-
-        if(configuration.getBorderLeft())
-            stringBuilder.append(BOTTOM_LEFT_CORNER);
-
-        stringBuilder.append(getDoubleDivider(lineWidth));
-
-        if(configuration.getBorderRight())
-            stringBuilder.append(BOTTOM_RIGHT_CORNER);
-
-        stringBuilder
-                .append(getHorizontalSpaces(configuration.getMarginRight()));
     }
 
 
