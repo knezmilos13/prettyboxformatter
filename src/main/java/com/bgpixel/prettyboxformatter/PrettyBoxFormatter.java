@@ -1,9 +1,14 @@
 package com.bgpixel.prettyboxformatter;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @SuppressWarnings({"WeakerAccess"})
 public class PrettyBoxFormatter {
@@ -89,28 +94,32 @@ public class PrettyBoxFormatter {
     // -------------------------------------------------------------------------------------- FORMAT
 
     /** Formats content provided by a PrettyBoxable instance into a pretty box using the
-     *  instance-level PrettyBoxConfiguration */
+     *  instance-level PrettyBoxConfiguration. */
     @NotNull
-    public String format(@NotNull PrettyBoxable thingy) {
-        return format(thingy.toStringLines());
+    public String format(@NotNull PrettyBoxable prettyBoxable) {
+        List<List<String>> sections = new ArrayList<>();
+        sections.add(prettyBoxable.toStringLines());
+        return runFormattingTask(sections, null, prettyBoxable);
     }
 
     /** Formats content provided by a PrettyBoxable instance into a pretty box using the given
      *  configuration instance. Any settings not defined in given instance will fallback to the
      *  instance-level configuration instance. */
     @NotNull
-    public String format(@NotNull PrettyBoxable thingy,
+    public String format(@NotNull PrettyBoxable prettyBoxable,
                          @NotNull PrettyBoxConfiguration configuration) {
-        return format(thingy.toStringLines(), configuration);
+        List<List<String>> sections = new ArrayList<>();
+        sections.add(prettyBoxable.toStringLines());
+        return runFormattingTask(sections, configuration, prettyBoxable);
     }
 
-    /** Formats given string lines into a pretty box using the instance-level PrettyBoxConfiguration. */
+    /** Formats given string lines into a pretty box using the instance-level
+     *  PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull List<String> lines) {
-        FormattingTaskData taskData =
-                prepareFormattingTaskData(lines, configuration, maxContentWidth, maxLineWidth);
-        if(invalidConfiguration) taskData.markPrintInvalidInstanceLevelConfigMessage();
-        return drawBox(taskData, configuration);
+        List<List<String>> sections = new ArrayList<>();
+        sections.add(lines);
+        return runFormattingTask(sections, null, lines);
     }
 
     /** Formats given string lines instance into a pretty box using the given configuration
@@ -119,54 +128,101 @@ public class PrettyBoxFormatter {
     @NotNull
     public String format(@NotNull List<String> lines,
                          @NotNull PrettyBoxConfiguration configuration) {
-        PrettyBoxConfiguration mergedConfig =
-                PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
-                        .applyFromInstance(configuration)
-                        .build();
+        List<List<String>> sections = new ArrayList<>();
+        sections.add(lines);
+        return runFormattingTask(sections, configuration, lines);
+    }
 
-        boolean validPerCallConfiguration = validateConfiguration(mergedConfig);
+    /** Formats given string lines into a pretty box using the instance-level
+     *  PrettyBoxConfiguration. */
+    @NotNull
+    public String formatMultiSection(@NotNull List<List<String>> sections) {
+        return runFormattingTask(sections, null, sections);
+    }
 
-        PrettyBoxConfiguration configurationToUse;
-        int maxContentWidth, maxLineWidth;
-        if(validPerCallConfiguration) {
-            configurationToUse = mergedConfig;
-            maxContentWidth = determineMaxContentWidth(configurationToUse);
-            maxLineWidth = determineMaxLineWidth(configurationToUse);
-        } else {
-            // Note: if this.invalidConfiguration is true, this.configuration has the valid fallback
-            configurationToUse = this.configuration;
-            maxContentWidth = this.maxContentWidth;
-            maxLineWidth = this.maxLineWidth;
+    /** Formats given string lines instance into a pretty box using the given configuration
+     *  instance. Any settings not defined in given instance will fallback to the instance-level
+     *  configuration instance. */ // TODO
+    @NotNull
+    public String formatMultiSection(@NotNull List<List<String>> sections,
+                                     @NotNull PrettyBoxConfiguration configuration) {
+        return runFormattingTask(sections, configuration, sections);
+    }
+
+    // TODO: jel su mi trebali multisectioni uopste? jel nije moglo kroz "" za pocetak,
+    // a posle cu da smislim nesto? Slazem se. Nasledi CharSequence
+
+    // ------------------------------------------------------------------------------ MAIN ALGORITHM
+
+    private String runFormattingTask(@NotNull List<List<String>> sections,
+                                     @Nullable PrettyBoxConfiguration perCallConfiguration,
+                                     @Nullable Object sourceObject) {
+        // values to use (if no per-call) or as fallback (if per-call invalid)
+        PrettyBoxConfiguration configurationToUse = this.configuration;
+        int maxContentWidth = this.maxContentWidth;
+        int maxLineWidth = this.maxLineWidth;
+        boolean invalidPerCallConfiguration = false;
+
+        if(perCallConfiguration != null) {
+            PrettyBoxConfiguration mergedConfig =
+                    PrettyBoxConfiguration.Builder.createFromInstance(DEFAULT_CONFIGURATION)
+                            .applyFromInstance(perCallConfiguration)
+                            .build();
+
+            invalidPerCallConfiguration = !validateConfiguration(mergedConfig);
+
+            if (!invalidPerCallConfiguration) {
+                configurationToUse = mergedConfig;
+                maxContentWidth = determineMaxContentWidth(configurationToUse);
+                maxLineWidth = determineMaxLineWidth(configurationToUse);
+            }
         }
 
-        FormattingTaskData taskData =
-                prepareFormattingTaskData(lines, configurationToUse, maxContentWidth, maxLineWidth);
+        FormattingTaskData taskData = prepareFormattingTaskData(
+                sections, configurationToUse, sourceObject, maxContentWidth, maxLineWidth);
         if(invalidConfiguration) taskData.markPrintInvalidInstanceLevelConfigMessage();
-        if(!validPerCallConfiguration) taskData.markPrintInvalidPerCallConfigMessage();
+        if(invalidPerCallConfiguration) taskData.markPrintInvalidPerCallConfigMessage();
 
         return drawBox(taskData, configurationToUse);
     }
 
-
-    // ------------------------------------------------------------------------------ MAIN ALGORITHM
-
     @SuppressWarnings("ConstantConditions") // We make sure it's not null
     @NotNull
     private FormattingTaskData prepareFormattingTaskData(
-            @NotNull List<String> lines,
+            @NotNull List<List<String>> sections,
             @NotNull PrettyBoxConfiguration configuration,
+            @Nullable Object sourceObject,
             int maxContentWidth,
             int maxLineWidth) {
 
+        // Add header/footer to content, if requested
+        List<BoxMetaData> headerData = configuration.getHeaderMetadata();
+        if(headerData != null && headerData.size() > 0)
+            sections.add(0, generateMetadata(headerData, sourceObject));
+
+        List<BoxMetaData> footerData = configuration.getFooterMetadata();
+        if(footerData != null && footerData.size() > 0)
+            sections.add(generateMetadata(footerData, sourceObject));
+
+
+        // Determine if there are content lines longer than max allowed width
+        int maxSourceWidth = 0;
+        for(List<String> section : sections) {
+            for (String line : section) maxSourceWidth = Math.max(maxSourceWidth, line.length());
+        }
+        // If there are lines longer than charsPerLine, split them to fit
+        if(maxSourceWidth > maxContentWidth) {
+            maxSourceWidth = maxContentWidth;
+            for(int i = 0; i < sections.size(); i++)
+                sections.set(i, splitLinesToFitBox(sections.get(i), maxContentWidth));
+        }
+
         FormattingTaskData taskData = new FormattingTaskData();
-        taskData.setContentLines(splitLinesToFitBox(lines, maxContentWidth));
+        taskData.setContentSections(sections);
 
         // If wrap content is TRUE, make the box as wide as the longest line we have.
         if (configuration.getWrapContent()) {
-            int longestContentWidth = 0;
-            for (String line : taskData.getContentLines())
-                longestContentWidth = Math.max(line.length(), longestContentWidth);
-            taskData.setContentWidth(longestContentWidth);
+            taskData.setContentWidth(maxSourceWidth);
             taskData.setLineWidth(taskData.getContentWidth()
                     + configuration.getPaddingLeft() + configuration.getPaddingRight());
         } else {
@@ -177,12 +233,47 @@ public class PrettyBoxFormatter {
         return taskData;
     }
 
+    @NotNull
+    private List<String> generateMetadata(
+            @NotNull List<BoxMetaData> boxMetaDataList,
+            @NotNull Object sourceObject) {
+
+        List<String> metadata = new ArrayList<>();
+
+        for(BoxMetaData boxMetaData : boxMetaDataList) {
+            switch (boxMetaData) {
+                case CURRENT_TIME:
+                    TimeZone tz = TimeZone.getTimeZone("UTC");
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+                    df.setTimeZone(tz);
+                    metadata.add(df.format(new Date()));
+                    break;
+                case FULL_CLASS_NAME:
+                    metadata.add(sourceObject.getClass().getCanonicalName());
+                    break;
+                case TIMESTAMP_SECONDS:
+                    metadata.add(String.valueOf(System.currentTimeMillis()/1000));
+                    break;
+                case TIMESTAMP_MILLIS:
+                    metadata.add(String.valueOf(System.currentTimeMillis()));
+                    break;
+                case SHORT_CLASS_NAME:
+                    metadata.add(sourceObject.getClass().getSimpleName());
+                    break;
+                case IDENTITY_HASHCODE:
+                    metadata.add(String.valueOf(System.identityHashCode(sourceObject)));
+                    break;
+            }
+        }
+
+        return metadata;
+    }
+
     // stuff is nullable, but we make sure the default settings provide fallback non-null values
     @SuppressWarnings("ConstantConditions")
     @NotNull
     private String drawBox(@NotNull FormattingTaskData taskData,
                            @NotNull PrettyBoxConfiguration configuration) {
-
         ArrayList<String> lines = new ArrayList<>();
 
         // Optimization. Set length to 0 before every use.
@@ -212,14 +303,22 @@ public class PrettyBoxFormatter {
                     taskData.getLineWidth(), configuration));
         }
 
-        List<String> contentLines = taskData.getContentLines();
-        for (String contentLine : contentLines) {
-            stringBuilder.setLength(0);
-            if (contentLine.length() == 0)
+        List<List<String>> contentSections = taskData.getContentSections();
+        for(int i = 0; i < contentSections.size(); i++) {
+            for (String contentLine : contentSections.get(i)) {
+                stringBuilder.setLength(0);
+                if (contentLine.length() == 0)
+                    drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
+                else
+                    drawContentLine(stringBuilder, contentLine, taskData.getContentWidth(), configuration);
+                lines.add(stringBuilder.toString());
+            }
+
+            if(i < contentSections.size() - 1) {
+                stringBuilder.setLength(0);
                 drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
-            else
-                drawContentLine(stringBuilder, contentLine, taskData.getContentWidth(), configuration);
-            lines.add(stringBuilder.toString());
+                lines.add(stringBuilder.toString());
+            }
         }
 
         if(configuration.getPaddingBottom() != 0) {

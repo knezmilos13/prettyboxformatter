@@ -3,6 +3,8 @@ package com.bgpixel.prettyboxformatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 @SuppressWarnings("WeakerAccess") // this is a library, and this class is part of library interface
 public class PrettyBoxConfiguration {
 
@@ -21,6 +23,8 @@ public class PrettyBoxConfiguration {
     @Nullable private final Integer marginRight;
     @Nullable private final Integer marginTop;
     @Nullable private final Integer marginBottom;
+    @Nullable private final List<BoxMetaData> headerMetadata;
+    @Nullable private final List<BoxMetaData> footerMetadata;
 
     private PrettyBoxConfiguration(@Nullable Boolean prefixEveryPrintWithNewline,
                                    @Nullable Integer charsPerLine,
@@ -36,7 +40,9 @@ public class PrettyBoxConfiguration {
                                    @Nullable Integer marginLeft,
                                    @Nullable Integer marginRight,
                                    @Nullable Integer marginTop,
-                                   @Nullable Integer marginBottom) {
+                                   @Nullable Integer marginBottom,
+                                   @Nullable List<BoxMetaData> headerMetadata,
+                                   @Nullable List<BoxMetaData> footerMetadata) {
         this.prefixEveryPrintWithNewline = prefixEveryPrintWithNewline;
         this.charsPerLine = charsPerLine;
         this.wrapContent = wrapContent;
@@ -52,6 +58,8 @@ public class PrettyBoxConfiguration {
         this.marginRight = marginRight;
         this.marginTop = marginTop;
         this.marginBottom = marginBottom;
+        this.headerMetadata = headerMetadata;
+        this.footerMetadata = footerMetadata;
     }
 
     @Nullable public Boolean getPrefixEveryPrintWithNewline() { return prefixEveryPrintWithNewline; }
@@ -69,6 +77,8 @@ public class PrettyBoxConfiguration {
     @Nullable public Integer getMarginRight() { return marginRight; }
     @Nullable public Integer getMarginTop() { return marginTop; }
     @Nullable public Integer getMarginBottom() { return marginBottom; }
+    @Nullable public List<BoxMetaData> getHeaderMetadata() { return headerMetadata; }
+    @Nullable public List<BoxMetaData> getFooterMetadata() { return footerMetadata; }
 
     @SuppressWarnings("UnusedReturnValue")
     public static class Builder {
@@ -88,6 +98,8 @@ public class PrettyBoxConfiguration {
         @Nullable private Integer marginRight;
         @Nullable private Integer marginTop;
         @Nullable private Integer marginBottom;
+        @Nullable private List<BoxMetaData> headerMetadata;
+        @Nullable private List<BoxMetaData> footerMetadata;
 
         /** Creates a Builder by copying all values from the PrettyBoxConfiguration instance */
         @NotNull
@@ -108,6 +120,8 @@ public class PrettyBoxConfiguration {
             builder.setMarginRight(configuration.getMarginRight());
             builder.setMarginTop(configuration.getMarginTop());
             builder.setMarginBottom(configuration.getMarginBottom());
+            builder.setHeaderMetadata(configuration.getHeaderMetadata());
+            builder.setFooterMetadata(configuration.getFooterMetadata());
             return builder;
         }
 
@@ -144,6 +158,10 @@ public class PrettyBoxConfiguration {
                 this.marginTop = configuration.getMarginTop();
             if(configuration.getMarginBottom() != null)
                 this.marginBottom = configuration.getMarginBottom();
+            if(configuration.getHeaderMetadata() != null)
+                this.headerMetadata = configuration.getHeaderMetadata();
+            if(configuration.getFooterMetadata() != null)
+                this.footerMetadata = configuration.getFooterMetadata();
             return this;
         }
 
@@ -304,6 +322,22 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
+        /** Sets which metadata elements will be shown in box header. If no elements are set, the
+         *  header will not be shown. */
+        @NotNull
+        public Builder setHeaderMetadata(@Nullable List<BoxMetaData> headerMetadata) {
+            this.headerMetadata = headerMetadata;
+            return this;
+        }
+
+        /** Sets which metadata elements will be shown in box footer. If no elements are set, the
+         *  footer will not be shown. */
+        @NotNull
+        public Builder setFooterMetadata(@Nullable List<BoxMetaData> footerMetadata) {
+            this.footerMetadata = footerMetadata;
+            return this;
+        }
+
         @NotNull
         public PrettyBoxConfiguration build() {
             return new PrettyBoxConfiguration(
@@ -312,7 +346,8 @@ public class PrettyBoxConfiguration {
                     wrapContent,
                     borderLeft, borderRight, borderTop, borderBottom,
                     paddingLeft, paddingRight, paddingTop, paddingBottom,
-                    marginLeft, marginRight, marginTop, marginBottom);
+                    marginLeft, marginRight, marginTop, marginBottom,
+                    headerMetadata, footerMetadata);
         }
 
     }
