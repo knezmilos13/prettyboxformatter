@@ -245,62 +245,42 @@ public class VariousConfigurationsTest {
     }
 
     private static final String test014expectedResult =
-            "┌────────────────────────────────────────────┐" + NLN +
-            "│ First line                                 │" + NLN +
-            "│ Second line                                │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
-            "│ Third line. Longer one. In second section. │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
-            "│ 4th line, 3rd section                      │" + NLN +
-            "│ 5th line, 3rd section                      │" + NLN +
-            "│ 6th line, 3rd section                      │" + NLN +
-            "└────────────────────────────────────────────┘";
+            "┌─────────────────────────────────┐" + NLN +
+            "│ SimpleBoxableObject             │" + NLN +
+            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "│ Number of apples: 5             │" + NLN +
+            "│ Apple seller name: John Johnson │" + NLN +
+            "│ Has green apples: true          │" + NLN +
+            "└─────────────────────────────────┘";
     @Test
-    public void _014_multiSection() {
-        List<List<String>> sections = new ArrayList<>();
-
-        List<String> section1 = new ArrayList<>();
-        section1.add("First line");
-        section1.add("Second line");
-        sections.add(section1);
-
-        List<String> section2 = new ArrayList<>();
-        section2.add("Third line. Longer one. In second section.");
-        sections.add(section2);
-
-        List<String> section3 = new ArrayList<>();
-        section3.add("4th line, 3rd section");
-        section3.add("5th line, 3rd section");
-        section3.add("6th line, 3rd section");
-        sections.add(section3);
-
-        String result = pbFormatter.formatMultiSection(sections);
+    public void _014_header() {
+        String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setHeaderMetadata(new ArrayList<BoxMetaData>() {{
+                            add(BoxMetaData.SHORT_CLASS_NAME);
+                        }})
+                        .build());
         Assert.assertEquals(test014expectedResult, result);
         System.out.println(result);
     }
 
     private static final String test015expectedResult =
-            "┌─────────────┐" + NLN +
-            "│ First line  │" + NLN +
-            "│ Second line │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
-            "│ Third line  │" + NLN +
-            "└─────────────┘";
+            "┌─────────────────────────────────┐" + NLN +
+            "│ Number of apples: 5             │" + NLN +
+            "│ Apple seller name: John Johnson │" + NLN +
+            "│ Has green apples: true          │" + NLN +
+            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "│ SimpleBoxableObject             │" + NLN +
+            "└─────────────────────────────────┘";
     @Test
-    public void _015_header_and_footer() { // TODO mozda par ovakvih i onda jedan koji kombinuje sekcije i header/footer?
+    public void _015_footer() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
                 new PrettyBoxConfiguration.Builder()
-                        .setHeaderMetadata(new ArrayList<BoxMetaData>() {{
-                            add(BoxMetaData.TIMESTAMP_SECONDS);
-                            add(BoxMetaData.CURRENT_TIME);
-                            add(BoxMetaData.FULL_CLASS_NAME);
-                        }})
                         .setFooterMetadata(new ArrayList<BoxMetaData>() {{
-                            add(BoxMetaData.TIMESTAMP_SECONDS);
                             add(BoxMetaData.SHORT_CLASS_NAME);
                         }})
                         .build());
-//        Assert.assertEquals(test013expectedResult, result);
+        Assert.assertEquals(test015expectedResult, result);
         System.out.println(result);
     }
 
