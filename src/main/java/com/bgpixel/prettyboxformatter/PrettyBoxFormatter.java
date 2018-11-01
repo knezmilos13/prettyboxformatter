@@ -97,9 +97,7 @@ public class PrettyBoxFormatter {
      *  instance-level PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull PrettyBoxable prettyBoxable) {
-        List<List<String>> sections = new ArrayList<>();
-        sections.add(prettyBoxable.toStringLines());
-        return runFormattingTask(sections, null, prettyBoxable);
+        return runFormattingTask(prettyBoxable.toStringLines(), null, prettyBoxable);
     }
 
     /** Formats content provided by a PrettyBoxable instance into a pretty box using the given
@@ -108,18 +106,14 @@ public class PrettyBoxFormatter {
     @NotNull
     public String format(@NotNull PrettyBoxable prettyBoxable,
                          @NotNull PrettyBoxConfiguration configuration) {
-        List<List<String>> sections = new ArrayList<>();
-        sections.add(prettyBoxable.toStringLines());
-        return runFormattingTask(sections, configuration, prettyBoxable);
+        return runFormattingTask(prettyBoxable.toStringLines(), configuration, prettyBoxable);
     }
 
     /** Formats given string lines into a pretty box using the instance-level
      *  PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull List<String> lines) {
-        List<List<String>> sections = new ArrayList<>();
-        sections.add(lines);
-        return runFormattingTask(sections, null, lines);
+        return runFormattingTask(lines, null, lines);
     }
 
     /** Formats given string lines instance into a pretty box using the given configuration
@@ -128,33 +122,13 @@ public class PrettyBoxFormatter {
     @NotNull
     public String format(@NotNull List<String> lines,
                          @NotNull PrettyBoxConfiguration configuration) {
-        List<List<String>> sections = new ArrayList<>();
-        sections.add(lines);
-        return runFormattingTask(sections, configuration, lines);
+        return runFormattingTask(lines, configuration, lines);
     }
 
-    /** Formats given string lines into a pretty box using the instance-level
-     *  PrettyBoxConfiguration. */
-    @NotNull
-    public String formatMultiSection(@NotNull List<List<String>> sections) {
-        return runFormattingTask(sections, null, sections);
-    }
-
-    /** Formats given string lines instance into a pretty box using the given configuration
-     *  instance. Any settings not defined in given instance will fallback to the instance-level
-     *  configuration instance. */ // TODO
-    @NotNull
-    public String formatMultiSection(@NotNull List<List<String>> sections,
-                                     @NotNull PrettyBoxConfiguration configuration) {
-        return runFormattingTask(sections, configuration, sections);
-    }
-
-    // TODO: jel su mi trebali multisectioni uopste? jel nije moglo kroz "" za pocetak,
-    // a posle cu da smislim nesto? Slazem se. Nasledi CharSequence
 
     // ------------------------------------------------------------------------------ MAIN ALGORITHM
 
-    private String runFormattingTask(@NotNull List<List<String>> sections,
+    private String runFormattingTask(@NotNull List<String> lines,
                                      @Nullable PrettyBoxConfiguration perCallConfiguration,
                                      @Nullable Object sourceObject) {
         // values to use (if no per-call) or as fallback (if per-call invalid)
@@ -179,7 +153,7 @@ public class PrettyBoxFormatter {
         }
 
         FormattingTaskData taskData = prepareFormattingTaskData(
-                sections, configurationToUse, sourceObject, maxContentWidth, maxLineWidth);
+                lines, configurationToUse, sourceObject, maxContentWidth, maxLineWidth);
         if(invalidConfiguration) taskData.markPrintInvalidInstanceLevelConfigMessage();
         if(invalidPerCallConfiguration) taskData.markPrintInvalidPerCallConfigMessage();
 
@@ -189,7 +163,7 @@ public class PrettyBoxFormatter {
     @SuppressWarnings("ConstantConditions") // We make sure it's not null
     @NotNull
     private FormattingTaskData prepareFormattingTaskData(
-            @NotNull List<List<String>> sections,
+            @NotNull List<String> lines,
             @NotNull PrettyBoxConfiguration configuration,
             @Nullable Object sourceObject,
             int maxContentWidth,
@@ -197,28 +171,30 @@ public class PrettyBoxFormatter {
 
         // Add header/footer to content, if requested
         List<BoxMetaData> headerData = configuration.getHeaderMetadata();
-        if(headerData != null && headerData.size() > 0)
-            sections.add(0, generateMetadata(headerData, sourceObject));
+        if(headerData != null && headerData.size() > 0) {
+            lines.add(0, "");
+            lines.addAll(0, generateMetadata(headerData, sourceObject));
+        }
 
         List<BoxMetaData> footerData = configuration.getFooterMetadata();
-        if(footerData != null && footerData.size() > 0)
-            sections.add(generateMetadata(footerData, sourceObject));
+        if(footerData != null && footerData.size() > 0) {
+            lines.add("");
+            lines.addAll(generateMetadata(footerData, sourceObject));
+        }
 
 
         // Determine if there are content lines longer than max allowed width
         int maxSourceWidth = 0;
-        for(List<String> section : sections) {
-            for (String line : section) maxSourceWidth = Math.max(maxSourceWidth, line.length());
-        }
+        for (String line : lines) maxSourceWidth = Math.max(maxSourceWidth, line.length());
+
         // If there are lines longer than charsPerLine, split them to fit
         if(maxSourceWidth > maxContentWidth) {
             maxSourceWidth = maxContentWidth;
-            for(int i = 0; i < sections.size(); i++)
-                sections.set(i, splitLinesToFitBox(sections.get(i), maxContentWidth));
+            lines = splitLinesToFitBox(lines, maxContentWidth);
         }
 
         FormattingTaskData taskData = new FormattingTaskData();
-        taskData.setContentSections(sections);
+        taskData.setContentLines(lines);
 
         // If wrap content is TRUE, make the box as wide as the longest line we have.
         if (configuration.getWrapContent()) {
@@ -303,22 +279,14 @@ public class PrettyBoxFormatter {
                     taskData.getLineWidth(), configuration));
         }
 
-        List<List<String>> contentSections = taskData.getContentSections();
-        for(int i = 0; i < contentSections.size(); i++) {
-            for (String contentLine : contentSections.get(i)) {
-                stringBuilder.setLength(0);
-                if (contentLine.length() == 0)
-                    drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
-                else
-                    drawContentLine(stringBuilder, contentLine, taskData.getContentWidth(), configuration);
-                lines.add(stringBuilder.toString());
-            }
-
-            if(i < contentSections.size() - 1) {
-                stringBuilder.setLength(0);
+        List<String> contentLines = taskData.getContentLines();
+        for (String contentLine : contentLines) {
+            stringBuilder.setLength(0);
+            if (contentLine.length() == 0)
                 drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
-                lines.add(stringBuilder.toString());
-            }
+            else
+                drawContentLine(stringBuilder, contentLine, taskData.getContentWidth(), configuration);
+            lines.add(stringBuilder.toString());
         }
 
         if(configuration.getPaddingBottom() != 0) {

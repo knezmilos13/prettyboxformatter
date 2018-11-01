@@ -41,13 +41,13 @@ An empty String in the list given to format method will be formatted as a second
 
 ```
 // Code                                    //  Result:
-List<String> lines = new ArrayList<>();    //  ┌─────────────┐
-lines.add("First line");                   //  │ First line  │
-lines.add("Second line");                  //  │ Second line │
-lines.add("");                             //  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┤
-lines.add("Third line");                   //  │ Third line  │
+List<String> contentLines = new ArrayList<>();    //  ┌─────────────┐
+contentLines.add("First line");                   //  │ First line  │
+contentLines.add("Second line");                  //  │ Second line │
+contentLines.add("");                             //  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+contentLines.add("Third line");                   //  │ Third line  │
                                            //  └─────────────┘  
-String result = pbFormatter.format(lines);
+String result = pbFormatter.format(contentLines);
 ```
 
 
