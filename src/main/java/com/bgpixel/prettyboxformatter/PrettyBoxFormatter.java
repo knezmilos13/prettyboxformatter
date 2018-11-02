@@ -97,7 +97,7 @@ public class PrettyBoxFormatter {
      *  instance-level PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull PrettyBoxable prettyBoxable) {
-        return runFormattingTask(prettyBoxable.toStringLines(), null, prettyBoxable);
+        return runFormattingTask(null, prettyBoxable.toStringLines(), null, prettyBoxable);
     }
 
     /** Formats content provided by a PrettyBoxable instance into a pretty box using the given
@@ -106,14 +106,14 @@ public class PrettyBoxFormatter {
     @NotNull
     public String format(@NotNull PrettyBoxable prettyBoxable,
                          @NotNull PrettyBoxConfiguration configuration) {
-        return runFormattingTask(prettyBoxable.toStringLines(), configuration, prettyBoxable);
+        return runFormattingTask(null, prettyBoxable.toStringLines(), configuration, prettyBoxable);
     }
 
     /** Formats given string lines into a pretty box using the instance-level
      *  PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull List<String> lines) {
-        return runFormattingTask(lines, null, lines);
+        return runFormattingTask(null, lines, null, lines);
     }
 
     /** Formats given string lines instance into a pretty box using the given configuration
@@ -122,13 +122,46 @@ public class PrettyBoxFormatter {
     @NotNull
     public String format(@NotNull List<String> lines,
                          @NotNull PrettyBoxConfiguration configuration) {
-        return runFormattingTask(lines, configuration, lines);
+        return runFormattingTask(null, lines, configuration, lines);
+    }
+
+    /** Convenience method that adds a title String to header. Otherwise works like
+     * {@link #format(PrettyBoxable)}. */
+    @NotNull
+    public String format(@NotNull String title, @NotNull PrettyBoxable prettyBoxable) {
+        return runFormattingTask(title, prettyBoxable.toStringLines(), null, prettyBoxable);
+    }
+
+    /** Convenience method that adds a title String to header. Otherwise works like
+     * {@link #format(PrettyBoxable, PrettyBoxConfiguration)}. */
+    @NotNull
+    public String format(@NotNull String title,
+                         @NotNull PrettyBoxable prettyBoxable,
+                         @NotNull PrettyBoxConfiguration configuration) {
+        return runFormattingTask(title, prettyBoxable.toStringLines(), configuration, prettyBoxable);
+    }
+
+    /** Convenience method that adds a title String to header. Otherwise works like
+     * {@link #format(List)}. */
+    @NotNull
+    public String format(@NotNull String title, @NotNull List<String> lines) {
+        return runFormattingTask(title, lines, null, lines);
+    }
+
+    /** Convenience method that adds a title String to header. Otherwise works like
+     *  {@link #format(List, PrettyBoxConfiguration)}. */
+    @NotNull
+    public String format(@NotNull String title,
+                         @NotNull List<String> lines,
+                         @NotNull PrettyBoxConfiguration configuration) {
+        return runFormattingTask(title, lines, configuration, lines);
     }
 
 
     // ------------------------------------------------------------------------------ MAIN ALGORITHM
 
-    private String runFormattingTask(@NotNull List<String> lines,
+    private String runFormattingTask(@Nullable String title,
+                                     @NotNull List<String> lines,
                                      @Nullable PrettyBoxConfiguration perCallConfiguration,
                                      @Nullable Object sourceObject) {
         // values to use (if no per-call) or as fallback (if per-call invalid)
@@ -153,7 +186,7 @@ public class PrettyBoxFormatter {
         }
 
         FormattingTaskData taskData = prepareFormattingTaskData(
-                lines, configurationToUse, sourceObject, maxContentWidth, maxLineWidth);
+                title, lines, configurationToUse, sourceObject, maxContentWidth, maxLineWidth);
         if(invalidConfiguration) taskData.markPrintInvalidInstanceLevelConfigMessage();
         if(invalidPerCallConfiguration) taskData.markPrintInvalidPerCallConfigMessage();
 
@@ -163,6 +196,7 @@ public class PrettyBoxFormatter {
     @SuppressWarnings("ConstantConditions") // We make sure it's not null
     @NotNull
     private FormattingTaskData prepareFormattingTaskData(
+            @Nullable String title,
             @NotNull List<String> lines,
             @NotNull PrettyBoxConfiguration configuration,
             @Nullable Object sourceObject,
@@ -171,9 +205,11 @@ public class PrettyBoxFormatter {
 
         // Add header/footer to content, if requested
         List<BoxMetaData> headerData = configuration.getHeaderMetadata();
-        if(headerData != null && headerData.size() > 0) {
+        if(title != null || (headerData != null && headerData.size() > 0)) {
             lines.add(0, "");
-            lines.addAll(0, generateMetadata(headerData, sourceObject));
+            if(headerData != null && headerData.size() > 0)
+                lines.addAll(0, generateMetadata(headerData, sourceObject));
+            if(title != null) lines.add(0, title);
         }
 
         List<BoxMetaData> footerData = configuration.getFooterMetadata();

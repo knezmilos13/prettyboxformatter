@@ -284,4 +284,40 @@ public class VariousConfigurationsTest {
         System.out.println(result);
     }
 
+    private static final String test016expectedResult =
+            "┌─────────────────────────────────┐" + NLN +
+            "│ Status of southern apple stall  │" + NLN +
+            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "│ Number of apples: 5             │" + NLN +
+            "│ Apple seller name: John Johnson │" + NLN +
+            "│ Has green apples: true          │" + NLN +
+            "└─────────────────────────────────┘";
+    @Test
+    public void _016_title() {
+        String result = pbFormatter.format("Status of southern apple stall", SIMPLE_BOXABLE_OBJECT);
+        Assert.assertEquals(test016expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test017expectedResult =
+            "┌─────────────────────────────────┐" + NLN +
+            "│ Status of southern apple stall  │" + NLN +
+            "│ SimpleBoxableObject             │" + NLN +
+            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "│ Number of apples: 5             │" + NLN +
+            "│ Apple seller name: John Johnson │" + NLN +
+            "│ Has green apples: true          │" + NLN +
+            "└─────────────────────────────────┘";
+    @Test
+    public void _017_title_and_header() {
+        String result = pbFormatter.format("Status of southern apple stall", SIMPLE_BOXABLE_OBJECT,
+                new PrettyBoxConfiguration.Builder()
+                        .setHeaderMetadata(new ArrayList<BoxMetaData>() {{
+                            add(BoxMetaData.SHORT_CLASS_NAME);
+                        }})
+                        .build());
+        Assert.assertEquals(test017expectedResult, result);
+        System.out.println(result);
+    }
+
 }
