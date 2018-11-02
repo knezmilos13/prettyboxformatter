@@ -38,15 +38,14 @@ String result = pbFormatter.format(content);
 ```
 
 An empty String in the list given to format method will be formatted as a second-level horizontal line:
-
 ```
-// Code                                    //  Result:
+// Code                                           //  Result:
 List<String> contentLines = new ArrayList<>();    //  ┌─────────────┐
 contentLines.add("First line");                   //  │ First line  │
 contentLines.add("Second line");                  //  │ Second line │
 contentLines.add("");                             //  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 contentLines.add("Third line");                   //  │ Third line  │
-                                           //  └─────────────┘  
+                                                  //  └─────────────┘  
 String result = pbFormatter.format(contentLines);
 ```
 
