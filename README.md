@@ -14,6 +14,9 @@ An example of a box produced by PrettyBoxFormatter:
 └─────────────────────────────────────────┘
 ```
 
+Another example, screenshot from Android Studio's Logcat:  
+<img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_logcat.png">
+
 PrettyBoxFormatter is not a logging library - the input strings/objects are simply converted to a
 single String containing the "box" with the desired content. You can then output that String to your
 console, write it to a file, send it over the Internet (don't know why you would do that), etc.
@@ -24,7 +27,7 @@ To add to your project using gradle, add the following:
 
     dependencies {
         ...
-        implementation 'com.bgpixel:prettyboxformatter:1.1.0'
+        implementation 'com.bgpixel:prettyboxformatter:1.3.0'
         ...
     }
 
@@ -48,6 +51,12 @@ contentLines.add("Third line");                   //  │ Third line  │
                                                   //  └─────────────┘  
 String result = pbFormatter.format(contentLines);
 ```
+
+
+You can use different line types:  
+<img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_box_1.png">
+<img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_box_2.png">
+<img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_box_3.png">
 
 
 For more details, see the following wiki pages:  
