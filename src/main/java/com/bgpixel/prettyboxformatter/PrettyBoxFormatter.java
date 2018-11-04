@@ -1,5 +1,6 @@
 package com.bgpixel.prettyboxformatter;
 
+import com.bgpixel.prettyboxformatter.lines.LineType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,14 +14,6 @@ import java.util.TimeZone;
 @SuppressWarnings({"WeakerAccess"})
 public class PrettyBoxFormatter {
 
-    private static final char TOP_LEFT_CORNER = '┌';
-    private static final char MIDDLE_LEFT_CORNER = '├';
-    private static final char BOTTOM_LEFT_CORNER = '└';
-    private static final char TOP_RIGHT_CORNER = '┐';
-    private static final char BOTTOM_RIGHT_CORNER = '┘';
-    private static final char MIDDLE_RIGHT_CORNER = '┤';
-    private static final char VERTICAL_LINE = '│';
-
     private static final String NEWLINE = System.getProperty("line.separator");
 
     @NotNull
@@ -29,10 +22,9 @@ public class PrettyBoxFormatter {
                     .setPrefixEveryPrintWithNewline(false)
                     .setCharsPerLine(80)
                     .setWrapContent(true)
-                    .setBorderLeft(true)
-                    .setBorderRight(true)
-                    .setBorderTop(true)
-                    .setBorderBottom(true) // add helper methods like for margin/padding
+                    .setBorders(true)
+                    .setBorderLineType(LineType.LINE)
+                    .setInnerLineType(LineType.DASH_TRIPLE)
                     .setHorizontalPadding(1)
                     .setVerticalPadding(0)
                     .setMargin(0)
@@ -369,12 +361,17 @@ public class PrettyBoxFormatter {
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginLeft()));
 
         if(configuration.getBorderLeft())
-            stringBuilder.append(top? TOP_LEFT_CORNER : BOTTOM_LEFT_CORNER);
+            stringBuilder.append(top?
+                    configuration.getBorderLineType().getTopLeftCorner()
+                    : configuration.getBorderLineType().getBottomLeftCorner());
 
-        stringBuilder.append(getDoubleDivider(lineWidth));
+        stringBuilder.append(getNCharacterString(
+                configuration.getBorderLineType().getHorizontalLine(), lineWidth));
 
         if(configuration.getBorderRight())
-            stringBuilder.append(top? TOP_RIGHT_CORNER : BOTTOM_RIGHT_CORNER);
+            stringBuilder.append(top?
+                    configuration.getBorderLineType().getTopRightCorner()
+                    : configuration.getBorderLineType().getBottomRightCorner());
 
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginRight()));
     }
@@ -394,13 +391,13 @@ public class PrettyBoxFormatter {
                     .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
             if(configuration.getBorderLeft())
-                stringBuilder.append(VERTICAL_LINE);
+                stringBuilder.append(configuration.getBorderLineType().getVerticalLine());
 
             stringBuilder
                     .append(getHorizontalSpaces(lineWidth));
 
             if(configuration.getBorderRight())
-                stringBuilder.append(VERTICAL_LINE);
+                stringBuilder.append(configuration.getBorderLineType().getVerticalLine());
 
             stringBuilder
                     .append(getHorizontalSpaces(configuration.getMarginRight()));
@@ -419,12 +416,13 @@ public class PrettyBoxFormatter {
                 .append(getHorizontalSpaces(configuration.getMarginLeft()));
 
         if(configuration.getBorderLeft())
-            stringBuilder.append(MIDDLE_LEFT_CORNER);
+            stringBuilder.append(configuration.getBorderLineType().getRightTIntersection());
 
-        stringBuilder.append(getSingleDivider(lineWidth));
+        stringBuilder.append(getNCharacterString(
+                configuration.getInnerLineType().getHorizontalLine(), lineWidth));
 
         if(configuration.getBorderRight())
-            stringBuilder.append(MIDDLE_RIGHT_CORNER);
+            stringBuilder.append(configuration.getBorderLineType().getLeftTIntersection());
 
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getMarginRight()));
@@ -438,7 +436,8 @@ public class PrettyBoxFormatter {
 
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginLeft()));
 
-        if(configuration.getBorderLeft()) stringBuilder.append(VERTICAL_LINE);
+        if(configuration.getBorderLeft())
+            stringBuilder.append(configuration.getBorderLineType().getVerticalLine());
 
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getPaddingLeft()))
@@ -448,7 +447,8 @@ public class PrettyBoxFormatter {
         stringBuilder
                 .append(getHorizontalSpaces(rightPadding));
 
-        if(configuration.getBorderRight()) stringBuilder.append(VERTICAL_LINE);
+        if(configuration.getBorderRight())
+            stringBuilder.append(configuration.getBorderLineType().getVerticalLine());
 
         stringBuilder.append(getHorizontalSpaces(configuration.getMarginRight()));
     }
@@ -503,22 +503,12 @@ public class PrettyBoxFormatter {
     }
 
     @NotNull
-    private String getDoubleDivider(int length) {
-        return getNCharacterString("─", length);
-    }
-
-    @NotNull
-    private String getSingleDivider(int length) {
-        return getNCharacterString("┄", length);
-    }
-
-    @NotNull
     private String getHorizontalSpaces(int length) {
-        return getNCharacterString(" ", length);
+        return getNCharacterString(' ', length);
     }
 
     @NotNull
-    private String getNCharacterString(@NotNull String character, int length) {
+    private String getNCharacterString(char character, int length) {
         StringBuilder outputBuffer = new StringBuilder(length);
         for (int i = 0; i < length; i++) outputBuffer.append(character);
         return outputBuffer.toString();

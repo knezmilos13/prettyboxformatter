@@ -1,6 +1,7 @@
 package com.bgpixel.prettyboxformatter;
 
 import com.bgpixel.prettyboxformatter.data.SimpleBoxableObject;
+import com.bgpixel.prettyboxformatter.lines.LineType;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.junit.runners.MethodSorters;
@@ -317,6 +318,30 @@ public class VariousConfigurationsTest {
                         }})
                         .build());
         Assert.assertEquals(test017expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test018expectedResult =
+            "+-------------+" + NLN +
+            "| First line  |" + NLN +
+            "| Second line |" + NLN +
+            "+             +" + NLN +
+            "| Third line  |" + NLN +
+            "+-------------+";
+    @Test
+    public void _018_differentLineTypes() {
+        List<String> lines = new ArrayList<>();
+        lines.add("First line");
+        lines.add("Second line");
+        lines.add("");
+        lines.add("Third line");
+
+        String result = pbFormatter.format(lines,
+                new PrettyBoxConfiguration.Builder()
+                        .setBorderLineType(LineType.SIMPLE_PLUS_MINUS)
+                        .setInnerLineType(LineType.SPACE)
+                        .build());
+        Assert.assertEquals(test018expectedResult, result);
         System.out.println(result);
     }
 

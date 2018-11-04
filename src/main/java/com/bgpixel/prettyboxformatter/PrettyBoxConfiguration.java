@@ -1,5 +1,6 @@
 package com.bgpixel.prettyboxformatter;
 
+import com.bgpixel.prettyboxformatter.lines.LineType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,8 @@ public class PrettyBoxConfiguration {
     @Nullable private final Boolean borderRight;
     @Nullable private final Boolean borderTop;
     @Nullable private final Boolean borderBottom;
+    @Nullable private final LineType borderLineType;
+    @Nullable private final LineType innerLineType;
     @Nullable private final Integer paddingLeft;
     @Nullable private final Integer paddingRight;
     @Nullable private final Integer paddingTop;
@@ -33,6 +36,8 @@ public class PrettyBoxConfiguration {
                                    @Nullable Boolean borderRight,
                                    @Nullable Boolean borderTop,
                                    @Nullable Boolean borderBottom,
+                                   @Nullable LineType borderLineType,
+                                   @Nullable LineType innerLineType,
                                    @Nullable Integer paddingLeft,
                                    @Nullable Integer paddingRight,
                                    @Nullable Integer paddingTop,
@@ -50,6 +55,8 @@ public class PrettyBoxConfiguration {
         this.borderRight = borderRight;
         this.borderTop = borderTop;
         this.borderBottom = borderBottom;
+        this.borderLineType = borderLineType;
+        this.innerLineType = innerLineType;
         this.paddingLeft = paddingLeft;
         this.paddingRight = paddingRight;
         this.paddingTop = paddingTop;
@@ -69,6 +76,12 @@ public class PrettyBoxConfiguration {
     @Nullable public Boolean getBorderRight() { return borderRight; }
     @Nullable public Boolean getBorderTop() { return borderTop; }
     @Nullable public Boolean getBorderBottom() { return borderBottom; }
+    @NotNull public LineType getBorderLineType() {
+        return borderLineType == null? LineType.SPACE : borderLineType;
+    }
+    @NotNull public LineType getInnerLineType() {
+        return innerLineType == null? getBorderLineType() : innerLineType;
+    }
     @Nullable public Integer getPaddingLeft() { return paddingLeft; }
     @Nullable public Integer getPaddingRight() { return paddingRight; }
     @Nullable public Integer getPaddingTop() { return paddingTop; }
@@ -90,6 +103,8 @@ public class PrettyBoxConfiguration {
         @Nullable private Boolean borderRight;
         @Nullable private Boolean borderTop;
         @Nullable private Boolean borderBottom;
+        @Nullable private LineType borderLineType;
+        @Nullable private LineType innerLineType;
         @Nullable private Integer paddingLeft;
         @Nullable private Integer paddingRight;
         @Nullable private Integer paddingTop;
@@ -112,6 +127,8 @@ public class PrettyBoxConfiguration {
             builder.setBorderRight(configuration.getBorderRight());
             builder.setBorderTop(configuration.getBorderTop());
             builder.setBorderBottom(configuration.getBorderBottom());
+            builder.setBorderLineType(configuration.getBorderLineType());
+            builder.setInnerLineType(configuration.getInnerLineType());
             builder.setPaddingLeft(configuration.getPaddingLeft());
             builder.setPaddingRight(configuration.getPaddingRight());
             builder.setPaddingTop(configuration.getPaddingTop());
@@ -142,6 +159,10 @@ public class PrettyBoxConfiguration {
                 this.borderTop = configuration.getBorderTop();
             if(configuration.getBorderBottom() != null)
                 this.borderBottom = configuration.getBorderBottom();
+            if(configuration.borderLineType != null)
+                this.borderLineType = configuration.getBorderLineType();
+            if(configuration.innerLineType != null)
+                this.innerLineType = configuration.getInnerLineType();
             if(configuration.getPaddingLeft() != null)
                 this.paddingLeft = configuration.getPaddingLeft();
             if(configuration.getPaddingRight() != null)
@@ -235,6 +256,20 @@ public class PrettyBoxConfiguration {
         public Builder setBorders(@Nullable Boolean borders) {
             setVerticalBorders(borders);
             setHorizontalBorders(borders);
+            return this;
+        }
+
+        /** Sets LineType that will be used for box borders. */
+        @NotNull
+        public Builder setBorderLineType(@Nullable LineType borderLineType) {
+            this.borderLineType = borderLineType;
+            return this;
+        }
+
+        /** Sets LineType that will be used for inner lines (i.e. separators). */
+        @NotNull
+        public Builder setInnerLineType(@Nullable LineType innerLineType) {
+            this.innerLineType = innerLineType;
             return this;
         }
 
@@ -345,6 +380,7 @@ public class PrettyBoxConfiguration {
                     charsPerLine,
                     wrapContent,
                     borderLeft, borderRight, borderTop, borderBottom,
+                    borderLineType, innerLineType,
                     paddingLeft, paddingRight, paddingTop, paddingBottom,
                     marginLeft, marginRight, marginTop, marginBottom,
                     headerMetadata, footerMetadata);
