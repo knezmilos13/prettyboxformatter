@@ -53,13 +53,14 @@ String result = pbFormatter.format(contentLines);
 ```
 
 
-You can use different line types:  
+You can use different [line types](https://github.com/knezmilos13/prettyboxformatter/wiki/Line-types):  
 <img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_box_1.png">
 <img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_box_2.png">
 <img src="https://github.com/knezmilos13/prettyboxformatter/blob/master/doc/readme_demo_box_3.png">
 
 
 For more details, see the following wiki pages:  
-[Configuration](https://github.com/knezmilos13/prettyboxformatter/wiki/Configuration)  
-[Font problems](https://github.com/knezmilos13/prettyboxformatter/wiki/Font-problems)  
-[Examples](https://github.com/knezmilos13/prettyboxformatter/wiki/Examples)
+* [Configuration](https://github.com/knezmilos13/prettyboxformatter/wiki/Configuration)  
+* [Font problems](https://github.com/knezmilos13/prettyboxformatter/wiki/Font-problems)  
+* [Examples](https://github.com/knezmilos13/prettyboxformatter/wiki/Examples)  
+* [Line types](https://github.com/knezmilos13/prettyboxformatter/wiki/Line-types)
