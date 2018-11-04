@@ -15,7 +15,8 @@ public interface LineType {
     LineType DASH_QUADRUPLE = new BasicLineType('┈', '┊', '┌', '┐', '└', '┘', '├', '┤', '┬', '┴', '┼');
     LineType DASH_QUADRUPLE_THICK = new BasicLineType('┉', '┋', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋');
     LineType LINE_DOUBLE = new BasicLineType('═', '║', '╔', '╗', '╚', '╝', '╠', '╣', '╦', '╩', '╬');
-    LineType SIMPLE_PLUS_MINUS = new SimpleLineType('-', '|', '+');
+    LineType PLUS_MINUS = new SimpleLineType('-', '|', '+');
+    LineType STAR = new SingleCharLineType('*');
     LineType SHADED_BLOCK_LIGHT = new SingleCharLineType('░');
     LineType SHADED_BLOCK_MEDIUM = new SingleCharLineType('▒');
     LineType SHADED_BLOCK_DARK = new SingleCharLineType('▓');
