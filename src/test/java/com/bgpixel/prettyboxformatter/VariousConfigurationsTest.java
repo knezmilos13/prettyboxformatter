@@ -1,7 +1,7 @@
 package com.bgpixel.prettyboxformatter;
 
 import com.bgpixel.prettyboxformatter.data.SimpleBoxableObject;
-import com.bgpixel.prettyboxformatter.lines.LineType;
+import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.junit.runners.MethodSorters;

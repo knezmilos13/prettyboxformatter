@@ -1,4 +1,4 @@
-package com.bgpixel.prettyboxformatter.lines;
+package com.bgpixel.prettyboxformatter.linetype;
 
 /** A LineType implementation where horizontal and vertical line have separate characters, while
  *  all other drawing elements use the same (third) character. */

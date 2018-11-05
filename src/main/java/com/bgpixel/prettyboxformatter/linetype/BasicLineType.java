@@ -1,4 +1,4 @@
-package com.bgpixel.prettyboxformatter.lines;
+package com.bgpixel.prettyboxformatter.linetype;
 
 /** A LineType implementation where you define each drawing element separately. */
 public class BasicLineType implements LineType {

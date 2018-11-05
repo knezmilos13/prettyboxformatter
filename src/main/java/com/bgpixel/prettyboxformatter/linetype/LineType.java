@@ -1,4 +1,4 @@
-package com.bgpixel.prettyboxformatter.lines;
+package com.bgpixel.prettyboxformatter.linetype;
 
 /** Defines characters that will be used for box drawing. Contains a number of predefined instances
  *  that can be used, or you can define a new one by implementing this interface or extending one

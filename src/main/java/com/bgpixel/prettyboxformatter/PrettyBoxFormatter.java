@@ -1,6 +1,6 @@
 package com.bgpixel.prettyboxformatter;
 
-import com.bgpixel.prettyboxformatter.lines.LineType;
+import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +48,7 @@ public class PrettyBoxFormatter {
     /** The maximum width of the box (exact width if wrap is false) that can be used for content. */
     private int maxContentWidth;
 
-    /** The maximum width (exact width if wrap is false) of horizontal lines used for horizontal
+    /** The maximum width (exact width if wrap is false) of horizontal linetype used for horizontal
      *  edges and to split content into sections. */
     private int maxLineWidth;
 
@@ -101,14 +101,14 @@ public class PrettyBoxFormatter {
         return runFormattingTask(null, prettyBoxable.toStringLines(), configuration, prettyBoxable);
     }
 
-    /** Formats given string lines into a pretty box using the instance-level
+    /** Formats given string linetype into a pretty box using the instance-level
      *  PrettyBoxConfiguration. */
     @NotNull
     public String format(@NotNull List<String> lines) {
         return runFormattingTask(null, lines, null, lines);
     }
 
-    /** Formats given string lines instance into a pretty box using the given configuration
+    /** Formats given string linetype instance into a pretty box using the given configuration
      *  instance. Any settings not defined in given instance will fallback to the instance-level
      *  configuration instance. */
     @NotNull
@@ -211,11 +211,11 @@ public class PrettyBoxFormatter {
         }
 
 
-        // Determine if there are content lines longer than max allowed width
+        // Determine if there are content linetype longer than max allowed width
         int maxSourceWidth = 0;
         for (String line : lines) maxSourceWidth = Math.max(maxSourceWidth, line.length());
 
-        // If there are lines longer than charsPerLine, split them to fit
+        // If there are linetype longer than charsPerLine, split them to fit
         if(maxSourceWidth > maxContentWidth) {
             maxSourceWidth = maxContentWidth;
             lines = splitLinesToFitBox(lines, maxContentWidth);
@@ -284,14 +284,14 @@ public class PrettyBoxFormatter {
         StringBuilder stringBuilder = new StringBuilder();
 
         // Terminology note: "draw" methods take StringBuilder and "draw" into it. "Generate"
-        // methods generate and return a list of Strings (lines to be output). They also take
+        // methods generate and return a list of Strings (linetype to be output). They also take
         // StringBuilder for optimization purposes, but its content after the call is irrelevant
 
         if(invalidConfiguration) lines.add(INVALID_PER_CALL_CONFIGURATION_MESSAGE);
         if(invalidConfiguration) lines.add(INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE);
 
         if(configuration.getPrefixEveryPrintWithNewline())
-            lines.add(" "); // add one space because of logcat (won't print initial \n lines)
+            lines.add(" "); // add one space because of logcat (won't print initial \n linetype)
 
         if(configuration.getMarginTop() != 0)
             lines.addAll(generateVerticalSpaces(configuration.getMarginTop()));
@@ -480,7 +480,7 @@ public class PrettyBoxFormatter {
         return maxContentWidth > 0;
     }
 
-    /** Returns the maximum width (exact width if wrap is false) of horizontal lines used for
+    /** Returns the maximum width (exact width if wrap is false) of horizontal linetype used for
      *  horizontal edges and to split content into sections. Can return invalid (zero, negative)
      *  values if configuration is invalid (e.g. too large margin, too small width) */
     @SuppressWarnings("ConstantConditions") // @see drawBox

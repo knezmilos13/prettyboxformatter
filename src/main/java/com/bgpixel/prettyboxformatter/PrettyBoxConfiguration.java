@@ -1,6 +1,6 @@
 package com.bgpixel.prettyboxformatter;
 
-import com.bgpixel.prettyboxformatter.lines.LineType;
+import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -206,7 +206,7 @@ public class PrettyBoxConfiguration {
         }
 
         /** If set to true, the box will take the minimum width needed to show all content without
-         *  splitting lines, if possible. The box will not be wider than charsPerLine.<br/>
+         *  splitting linetype, if possible. The box will not be wider than charsPerLine.<br/>
          *  If set to false, the box will have a fixed width of charsPerLine */
         @NotNull
         public Builder setWrapContent(@Nullable Boolean wrapContent) {
@@ -220,7 +220,7 @@ public class PrettyBoxConfiguration {
             return this;
         }
         /** Note: many "monospaced" fonts are not fully monospaced so closed boxes might not work
-         *  properly (i.e. the lengths of the lines won't be the same). In that case you should set
+         *  properly (i.e. the lengths of the linetype won't be the same). In that case you should set
          *  this value to false. */
         @NotNull
         public Builder setBorderRight(@Nullable Boolean borderRight) {
@@ -266,7 +266,7 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** Sets LineType that will be used for inner lines (i.e. separators). */
+        /** Sets LineType that will be used for inner linetype (i.e. separators). */
         @NotNull
         public Builder setInnerLineType(@Nullable LineType innerLineType) {
             this.innerLineType = innerLineType;

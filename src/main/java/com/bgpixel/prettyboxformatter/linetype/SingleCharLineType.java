@@ -1,4 +1,4 @@
-package com.bgpixel.prettyboxformatter.lines;
+package com.bgpixel.prettyboxformatter.linetype;
 
 /** A LineType implementation where the same character is used for all drawing elements. */
 public class SingleCharLineType implements LineType {
