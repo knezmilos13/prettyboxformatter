@@ -290,7 +290,8 @@ public class PrettyBoxFormatter {
         if(invalidConfiguration) lines.add(INVALID_PER_CALL_CONFIGURATION_MESSAGE);
         if(invalidConfiguration) lines.add(INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE);
 
-        if(configuration.getPrefixEveryPrintWithNewline()) lines.add("");
+        if(configuration.getPrefixEveryPrintWithNewline())
+            lines.add(" "); // add one space because of logcat (won't print initial \n lines)
 
         if(configuration.getMarginTop() != 0)
             lines.addAll(generateVerticalSpaces(configuration.getMarginTop()));
@@ -348,7 +349,7 @@ public class PrettyBoxFormatter {
     @NotNull
     private List<String> generateVerticalSpaces(int verticalMargin) {
         List<String> lines = new ArrayList<>();
-        for(int i = 0; i < verticalMargin; i++) lines.add("");
+        for(int i = 0; i < verticalMargin; i++) lines.add(" "); // one space because of logcat
         return lines;
     }
 

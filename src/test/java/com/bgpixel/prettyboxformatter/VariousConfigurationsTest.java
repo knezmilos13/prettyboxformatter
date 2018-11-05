@@ -63,7 +63,7 @@ public class VariousConfigurationsTest {
     }
 
     private static final String test003expectedResult =
-            NLN +
+            " " + NLN +
             "┌─────────────────────────────────┐" + NLN +
             "│ Number of apples: 5             │" + NLN +
             "│ Apple seller name: John Johnson │" + NLN +
@@ -151,12 +151,13 @@ public class VariousConfigurationsTest {
     }
 
     private static final String test008expectedResult =
-            NLN +
+            " " + NLN +
             "          ┌─────────────────────────────────┐          " + NLN +
             "          │ Number of apples: 5             │          " + NLN +
             "          │ Apple seller name: John Johnson │          " + NLN +
             "          │ Has green apples: true          │          " + NLN +
-            "          └─────────────────────────────────┘          " + NLN;
+            "          └─────────────────────────────────┘          " + NLN +
+            " ";
     @Test
     public void _008_margin() {
         String result = pbFormatter.format(SIMPLE_BOXABLE_OBJECT,
@@ -338,7 +339,7 @@ public class VariousConfigurationsTest {
 
         String result = pbFormatter.format(lines,
                 new PrettyBoxConfiguration.Builder()
-                        .setBorderLineType(LineType.SIMPLE_PLUS_MINUS)
+                        .setBorderLineType(LineType.PLUS_MINUS)
                         .setInnerLineType(LineType.SPACE)
                         .build());
         Assert.assertEquals(test018expectedResult, result);
