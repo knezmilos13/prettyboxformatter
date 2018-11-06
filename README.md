@@ -27,7 +27,7 @@ To add to your project using gradle, add the following:
 
     dependencies {
         ...
-        implementation 'com.bgpixel:prettyboxformatter:1.3.1'
+        implementation 'com.bgpixel:prettyboxformatter:1.4.0'
         ...
     }
 
@@ -40,15 +40,18 @@ PrettyBoxFormatter pbFormatter = new PrettyBoxFormatter();
 String result = pbFormatter.format(content);
 ```
 
-An empty String in the list given to format method will be formatted as a second-level horizontal line:
+You can add inner horizontal lines by adding a `LineWithLevel` or `LineWithType` instance to a 
+`List<CharSequence>` passed to `format` method. For details, see 
+[format method](https://github.com/knezmilos13/prettyboxformatter/wiki/Format-method).  
+
 ```
-// Code                                           //  Result:
-List<String> contentLines = new ArrayList<>();    //  ┌─────────────┐
-contentLines.add("First line");                   //  │ First line  │
-contentLines.add("Second line");                  //  │ Second line │
-contentLines.add("");                             //  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┤
-contentLines.add("Third line");                   //  │ Third line  │
-                                                  //  └─────────────┘  
+// Code                                                 //  Result:
+List<CharSequence> contentLines = new ArrayList<>();    //  ┌─────────────┐
+contentLines.add("First line");                         //  │ First line  │
+contentLines.add("Second line");                        //  │ Second line │
+contentLines.add(LineWithLevel.LEVEL_1);                //  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+contentLines.add("Third line");                         //  │ Third line  │
+                                                        //  └─────────────┘  
 String result = pbFormatter.format(contentLines);
 ```
 
@@ -60,7 +63,8 @@ You can use different [line types](https://github.com/knezmilos13/prettyboxforma
 
 
 For more details, see the following wiki pages:  
-* [Configuration](https://github.com/knezmilos13/prettyboxformatter/wiki/Configuration)  
+* [Configuration](https://github.com/knezmilos13/prettyboxformatter/wiki/Configuration)
+* [Format method](https://github.com/knezmilos13/prettyboxformatter/wiki/Format-method)  
 * [Font problems](https://github.com/knezmilos13/prettyboxformatter/wiki/Font-problems)  
 * [Examples](https://github.com/knezmilos13/prettyboxformatter/wiki/Examples)  
 * [Line types](https://github.com/knezmilos13/prettyboxformatter/wiki/Line-types)
