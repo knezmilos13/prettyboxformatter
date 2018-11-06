@@ -25,8 +25,8 @@ public class SimpleBoxableObject implements PrettyBoxable {
     public boolean isHasGreenApples() { return hasGreenApples; }
 
     @NotNull @Override
-    public List<String> toStringLines() {
-        List<String> lines = new ArrayList<>();
+    public List<CharSequence> toStringLines() {
+        List<CharSequence> lines = new ArrayList<>();
         lines.add("Number of apples: " + numberOfApples);
         lines.add("Apple seller name: " + appleSellerName);
         lines.add("Has green apples: " + hasGreenApples);

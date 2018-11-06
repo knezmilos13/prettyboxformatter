@@ -1,9 +1,14 @@
 package com.bgpixel.prettyboxformatter;
 
 import com.bgpixel.prettyboxformatter.data.SimpleBoxableObject;
+import com.bgpixel.prettyboxformatter.line.LineWithType;
+import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrettyBoxFormatterTest {
 
@@ -58,6 +63,32 @@ public class PrettyBoxFormatterTest {
         Assert.assertEquals(Integer.valueOf(10), mergedConfiguration.getMarginLeft());
         Assert.assertEquals(Integer.valueOf(1), mergedConfiguration.getMarginTop());
         Assert.assertEquals(Integer.valueOf(0), mergedConfiguration.getPaddingBottom());
+    }
+
+    private static final String setLineWithTypeExpectedResult =
+            "┌─────────────┐" + NLN +
+            "│ First line  │" + NLN +
+            "├╌╌╌╌╌╌╌╌╌╌╌╌╌┤" + NLN +
+            "│ Second line │" + NLN +
+            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "│ Third line  │" + NLN +
+            "├-------------┤" + NLN +
+            "│ Fourth line │" + NLN +
+            "└─────────────┘";
+    @Test
+    public void setLineWithType() {
+        List<CharSequence> lines = new ArrayList<>();
+        lines.add("First line");
+        lines.add(new LineWithType(LineType.DASH_DOUBLE));
+        lines.add("Second line");
+        lines.add(new LineWithType(LineType.DASH_TRIPLE));
+        lines.add("Third line");
+        lines.add(new LineWithType(LineType.PLUS_MINUS));
+        lines.add("Fourth line");
+
+        String result = pbFormatter.format(lines);
+        Assert.assertEquals(setLineWithTypeExpectedResult, result);
+        System.out.println(result);
     }
 
 }

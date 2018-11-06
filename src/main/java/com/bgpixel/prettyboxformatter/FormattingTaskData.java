@@ -7,15 +7,15 @@ import java.util.List;
 
 class FormattingTaskData {
 
-    @NotNull private List<String> contentLines = new ArrayList<>();
+    @NotNull private List<CharSequence> contentLines = new ArrayList<>();
     private int contentWidth;
     private int lineWidth;
 
     private boolean printInvalidInstanceLevelConfigMessage = false;
     private boolean printInvalidPerCallConfigMessage = false;
 
-    @NotNull List<String> getContentLines() { return contentLines; }
-    void setContentLines(@NotNull List<String> contentLines) {
+    @NotNull List<CharSequence> getContentLines() { return contentLines; }
+    void setContentLines(@NotNull List<CharSequence> contentLines) {
         this.contentLines = contentLines;
     }
 

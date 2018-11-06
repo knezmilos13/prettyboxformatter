@@ -1,5 +1,7 @@
 package com.bgpixel.prettyboxformatter;
 
+import com.bgpixel.prettyboxformatter.line.LineWithLevel;
+import com.bgpixel.prettyboxformatter.line.LineWithType;
 import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +50,7 @@ public class PrettyBoxFormatter {
     /** The maximum width of the box (exact width if wrap is false) that can be used for content. */
     private int maxContentWidth;
 
-    /** The maximum width (exact width if wrap is false) of horizontal linetype used for horizontal
+    /** The maximum width (exact width if wrap is false) of horizontal lines used for horizontal
      *  edges and to split content into sections. */
     private int maxLineWidth;
 
@@ -101,18 +103,18 @@ public class PrettyBoxFormatter {
         return runFormattingTask(null, prettyBoxable.toStringLines(), configuration, prettyBoxable);
     }
 
-    /** Formats given string linetype into a pretty box using the instance-level
+    /** Formats given string lines into a pretty box using the instance-level
      *  PrettyBoxConfiguration. */
     @NotNull
-    public String format(@NotNull List<String> lines) {
+    public String format(@NotNull List<CharSequence> lines) {
         return runFormattingTask(null, lines, null, lines);
     }
 
-    /** Formats given string linetype instance into a pretty box using the given configuration
+    /** Formats given string lines instance into a pretty box using the given configuration
      *  instance. Any settings not defined in given instance will fallback to the instance-level
      *  configuration instance. */
     @NotNull
-    public String format(@NotNull List<String> lines,
+    public String format(@NotNull List<CharSequence> lines,
                          @NotNull PrettyBoxConfiguration configuration) {
         return runFormattingTask(null, lines, configuration, lines);
     }
@@ -136,7 +138,7 @@ public class PrettyBoxFormatter {
     /** Convenience method that adds a title String to header. Otherwise works like
      * {@link #format(List)}. */
     @NotNull
-    public String format(@NotNull String title, @NotNull List<String> lines) {
+    public String format(@NotNull String title, @NotNull List<CharSequence> lines) {
         return runFormattingTask(title, lines, null, lines);
     }
 
@@ -144,7 +146,7 @@ public class PrettyBoxFormatter {
      *  {@link #format(List, PrettyBoxConfiguration)}. */
     @NotNull
     public String format(@NotNull String title,
-                         @NotNull List<String> lines,
+                         @NotNull List<CharSequence> lines,
                          @NotNull PrettyBoxConfiguration configuration) {
         return runFormattingTask(title, lines, configuration, lines);
     }
@@ -153,7 +155,7 @@ public class PrettyBoxFormatter {
     // ------------------------------------------------------------------------------ MAIN ALGORITHM
 
     private String runFormattingTask(@Nullable String title,
-                                     @NotNull List<String> lines,
+                                     @NotNull List<CharSequence> lines,
                                      @Nullable PrettyBoxConfiguration perCallConfiguration,
                                      @Nullable Object sourceObject) {
         // values to use (if no per-call) or as fallback (if per-call invalid)
@@ -189,7 +191,7 @@ public class PrettyBoxFormatter {
     @NotNull
     private FormattingTaskData prepareFormattingTaskData(
             @Nullable String title,
-            @NotNull List<String> lines,
+            @NotNull List<CharSequence> lines,
             @NotNull PrettyBoxConfiguration configuration,
             @Nullable Object sourceObject,
             int maxContentWidth,
@@ -198,7 +200,7 @@ public class PrettyBoxFormatter {
         // Add header/footer to content, if requested
         List<BoxMetaData> headerData = configuration.getHeaderMetadata();
         if(title != null || (headerData != null && headerData.size() > 0)) {
-            lines.add(0, "");
+            lines.add(0, LineWithLevel.LEVEL_0);
             if(headerData != null && headerData.size() > 0)
                 lines.addAll(0, generateMetadata(headerData, sourceObject));
             if(title != null) lines.add(0, title);
@@ -206,16 +208,16 @@ public class PrettyBoxFormatter {
 
         List<BoxMetaData> footerData = configuration.getFooterMetadata();
         if(footerData != null && footerData.size() > 0) {
-            lines.add("");
+            lines.add(LineWithLevel.LEVEL_0);
             lines.addAll(generateMetadata(footerData, sourceObject));
         }
 
 
-        // Determine if there are content linetype longer than max allowed width
+        // Determine if there are content lines longer than max allowed width
         int maxSourceWidth = 0;
-        for (String line : lines) maxSourceWidth = Math.max(maxSourceWidth, line.length());
+        for (CharSequence line : lines) maxSourceWidth = Math.max(maxSourceWidth, line.length());
 
-        // If there are linetype longer than charsPerLine, split them to fit
+        // If there are lines longer than charsPerLine, split them to fit
         if(maxSourceWidth > maxContentWidth) {
             maxSourceWidth = maxContentWidth;
             lines = splitLinesToFitBox(lines, maxContentWidth);
@@ -278,20 +280,20 @@ public class PrettyBoxFormatter {
     @NotNull
     private String drawBox(@NotNull FormattingTaskData taskData,
                            @NotNull PrettyBoxConfiguration configuration) {
-        ArrayList<String> lines = new ArrayList<>();
+        ArrayList<CharSequence> lines = new ArrayList<>();
 
         // Optimization. Set length to 0 before every use.
         StringBuilder stringBuilder = new StringBuilder();
 
         // Terminology note: "draw" methods take StringBuilder and "draw" into it. "Generate"
-        // methods generate and return a list of Strings (linetype to be output). They also take
+        // methods generate and return a list of Strings (lines to be output). They also take
         // StringBuilder for optimization purposes, but its content after the call is irrelevant
 
         if(invalidConfiguration) lines.add(INVALID_PER_CALL_CONFIGURATION_MESSAGE);
         if(invalidConfiguration) lines.add(INVALID_INSTANCE_LEVEL_CONFIGURATION_MESSAGE);
 
         if(configuration.getPrefixEveryPrintWithNewline())
-            lines.add(" "); // add one space because of logcat (won't print initial \n linetype)
+            lines.add(" "); // add one space because of logcat (won't print initial \n lines)
 
         if(configuration.getMarginTop() != 0)
             lines.addAll(generateVerticalSpaces(configuration.getMarginTop()));
@@ -308,12 +310,20 @@ public class PrettyBoxFormatter {
                     taskData.getLineWidth(), configuration));
         }
 
-        List<String> contentLines = taskData.getContentLines();
-        for (String contentLine : contentLines) {
+        List<CharSequence> contentLines = taskData.getContentLines();
+        for (CharSequence contentLine : contentLines) {
             stringBuilder.setLength(0);
-            if (contentLine.length() == 0)
-                drawInnerLine(stringBuilder, taskData.getLineWidth(), configuration);
-            else
+            if (contentLine instanceof LineWithLevel || contentLine instanceof LineWithType) {
+                LineType lineType;
+                if(contentLine instanceof LineWithType)
+                    lineType = ((LineWithType) contentLine).getLineType();
+                else if(contentLine instanceof LineWithLevel)
+                    lineType = configuration.getLineTypeForLevel(
+                            ((LineWithLevel) contentLine).getLineLevel());
+                else
+                    lineType = configuration.getInnerLineType();
+                drawInnerLine(stringBuilder, taskData.getLineWidth(), lineType, configuration); // TODO maybe we should call this lineLength and not width?
+            } else
                 drawContentLine(stringBuilder, contentLine, taskData.getContentWidth(), configuration);
             lines.add(stringBuilder.toString());
         }
@@ -337,9 +347,9 @@ public class PrettyBoxFormatter {
     }
 
     @NotNull
-    private List<String> splitLinesToFitBox(@NotNull List<String> lines, int contentWidth) {
-        List<String> splitLines = new ArrayList<>();
-        for(String line : lines) {
+    private List<CharSequence> splitLinesToFitBox(@NotNull List<CharSequence> lines, int contentWidth) {
+        List<CharSequence> splitLines = new ArrayList<>();
+        for(CharSequence line : lines) {
             if(line.length() <= contentWidth) splitLines.add(line);
             else splitLines.addAll(splitLineEveryNChars(line, contentWidth));
         }
@@ -347,8 +357,8 @@ public class PrettyBoxFormatter {
     }
 
     @NotNull
-    private List<String> generateVerticalSpaces(int verticalMargin) {
-        List<String> lines = new ArrayList<>();
+    private List<CharSequence> generateVerticalSpaces(int verticalMargin) {
+        List<CharSequence> lines = new ArrayList<>();
         for(int i = 0; i < verticalMargin; i++) lines.add(" "); // one space because of logcat
         return lines;
     }
@@ -412,6 +422,7 @@ public class PrettyBoxFormatter {
     @SuppressWarnings("ConstantConditions") // @see drawBox
     private void drawInnerLine(@NotNull StringBuilder stringBuilder,
                                int lineWidth,
+                               @NotNull LineType lineType,
                                @NotNull PrettyBoxConfiguration configuration) {
         stringBuilder
                 .append(getHorizontalSpaces(configuration.getMarginLeft()));
@@ -419,8 +430,7 @@ public class PrettyBoxFormatter {
         if(configuration.getBorderLeft())
             stringBuilder.append(configuration.getBorderLineType().getRightTIntersection());
 
-        stringBuilder.append(getNCharacterString(
-                configuration.getInnerLineType().getHorizontalLine(), lineWidth));
+        stringBuilder.append(getNCharacterString(lineType.getHorizontalLine(), lineWidth));
 
         if(configuration.getBorderRight())
             stringBuilder.append(configuration.getBorderLineType().getLeftTIntersection());
@@ -431,7 +441,7 @@ public class PrettyBoxFormatter {
 
     @SuppressWarnings("ConstantConditions") // @see drawBox
     private void drawContentLine(@NotNull StringBuilder stringBuilder,
-                                 @NotNull String line,
+                                 @NotNull CharSequence line,
                                  int contentWidth,
                                  @NotNull PrettyBoxConfiguration configuration) {
 
@@ -480,7 +490,7 @@ public class PrettyBoxFormatter {
         return maxContentWidth > 0;
     }
 
-    /** Returns the maximum width (exact width if wrap is false) of horizontal linetype used for
+    /** Returns the maximum width (exact width if wrap is false) of horizontal lines used for
      *  horizontal edges and to split content into sections. Can return invalid (zero, negative)
      *  values if configuration is invalid (e.g. too large margin, too small width) */
     @SuppressWarnings("ConstantConditions") // @see drawBox
@@ -495,11 +505,15 @@ public class PrettyBoxFormatter {
     }
 
     @NotNull
-    private List<String> splitLineEveryNChars(@NotNull String string, int partitionSize) {
-        List<String> parts = new ArrayList<>();
+    private List<CharSequence> splitLineEveryNChars(@NotNull CharSequence string, int partitionSize) {
+        List<CharSequence> parts = new ArrayList<>();
         int len = string.length();
-        for (int i=0; i<len; i+=partitionSize)
-            parts.add(string.substring(i, Math.min(len, i + partitionSize)));
+        if(len <= partitionSize) parts.add(string);
+        else {
+            for (int i = 0; i < len; i += partitionSize)
+                parts.add(string.subSequence(i, Math.min(len, i + partitionSize)));
+        }
+
         return parts;
     }
 

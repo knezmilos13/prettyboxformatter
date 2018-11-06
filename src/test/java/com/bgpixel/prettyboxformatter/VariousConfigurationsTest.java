@@ -1,6 +1,8 @@
 package com.bgpixel.prettyboxformatter;
 
 import com.bgpixel.prettyboxformatter.data.SimpleBoxableObject;
+import com.bgpixel.prettyboxformatter.line.LineLevels;
+import com.bgpixel.prettyboxformatter.line.LineWithLevel;
 import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.junit.*;
 import org.junit.rules.TestName;
@@ -33,15 +35,13 @@ public class VariousConfigurationsTest {
             "┌─────────────┐" + NLN +
             "│ First line  │" + NLN +
             "│ Second line │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
             "│ Third line  │" + NLN +
             "└─────────────┘";
     @Test
     public void _001_formatLinesManually() {
-        List<String> lines = new ArrayList<>();
+        List<CharSequence> lines = new ArrayList<>();
         lines.add("First line");
         lines.add("Second line");
-        lines.add("");
         lines.add("Third line");
 
         String result = pbFormatter.format(lines);
@@ -249,7 +249,7 @@ public class VariousConfigurationsTest {
     private static final String test014expectedResult =
             "┌─────────────────────────────────┐" + NLN +
             "│ SimpleBoxableObject             │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "├─────────────────────────────────┤" + NLN +
             "│ Number of apples: 5             │" + NLN +
             "│ Apple seller name: John Johnson │" + NLN +
             "│ Has green apples: true          │" + NLN +
@@ -271,7 +271,7 @@ public class VariousConfigurationsTest {
             "│ Number of apples: 5             │" + NLN +
             "│ Apple seller name: John Johnson │" + NLN +
             "│ Has green apples: true          │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "├─────────────────────────────────┤" + NLN +
             "│ SimpleBoxableObject             │" + NLN +
             "└─────────────────────────────────┘";
     @Test
@@ -289,7 +289,7 @@ public class VariousConfigurationsTest {
     private static final String test016expectedResult =
             "┌─────────────────────────────────┐" + NLN +
             "│ Status of southern apple stall  │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "├─────────────────────────────────┤" + NLN +
             "│ Number of apples: 5             │" + NLN +
             "│ Apple seller name: John Johnson │" + NLN +
             "│ Has green apples: true          │" + NLN +
@@ -305,7 +305,7 @@ public class VariousConfigurationsTest {
             "┌─────────────────────────────────┐" + NLN +
             "│ Status of southern apple stall  │" + NLN +
             "│ SimpleBoxableObject             │" + NLN +
-            "├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" + NLN +
+            "├─────────────────────────────────┤" + NLN +
             "│ Number of apples: 5             │" + NLN +
             "│ Apple seller name: John Johnson │" + NLN +
             "│ Has green apples: true          │" + NLN +
@@ -331,10 +331,10 @@ public class VariousConfigurationsTest {
             "+-------------+";
     @Test
     public void _018_differentLineTypes() {
-        List<String> lines = new ArrayList<>();
+        List<CharSequence> lines = new ArrayList<>();
         lines.add("First line");
         lines.add("Second line");
-        lines.add("");
+        lines.add(LineWithLevel.LEVEL_1);
         lines.add("Third line");
 
         String result = pbFormatter.format(lines,
@@ -344,6 +344,97 @@ public class VariousConfigurationsTest {
                         .build());
         Assert.assertEquals(test018expectedResult, result);
         System.out.println(result);
+    }
+
+    private static final String test019_1_expectedResult =
+            "╔═════════╗" + NLN +
+            "║ Text... ║" + NLN +
+            "╠═════════╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠━━━━━━━━━╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠╍╍╍╍╍╍╍╍╍╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠┅┅┅┅┅┅┅┅┅╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠┉┉┉┉┉┉┉┉┉╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠─────────╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠╌╌╌╌╌╌╌╌╌╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠┄┄┄┄┄┄┄┄┄╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╠┈┈┈┈┈┈┈┈┈╣" + NLN +
+            "║ Text... ║" + NLN +
+            "╚═════════╝";
+    @Test
+    public void _019_lineset_1() {
+        String result = pbFormatter.format(generateLinesetTestingLines(),
+                new PrettyBoxConfiguration.Builder()
+                        .setLineLevels(LineLevels.getFullLineLineset())
+                        .build());
+        Assert.assertEquals(test019_1_expectedResult, result);
+        System.out.println(result);
+    }
+
+    private static final String test019_2_expectedResult =
+            "███████████" + NLN +
+            "█ Text... █" + NLN +
+            "███████████" + NLN +
+            "█ Text... █" + NLN +
+            "█▓▓▓▓▓▓▓▓▓█" + NLN +
+            "█ Text... █" + NLN +
+            "█▒▒▒▒▒▒▒▒▒█" + NLN +
+            "█ Text... █" + NLN +
+            "█░░░░░░░░░█" + NLN +
+            "█ Text... █" + NLN +
+            "█░░░░░░░░░█" + NLN +
+            "█ Text... █" + NLN +
+            "█░░░░░░░░░█" + NLN +
+            "█ Text... █" + NLN +
+            "█░░░░░░░░░█" + NLN +
+            "█ Text... █" + NLN +
+            "█░░░░░░░░░█" + NLN +
+            "█ Text... █" + NLN +
+            "█░░░░░░░░░█" + NLN +
+            "█ Text... █" + NLN +
+            "███████████";
+    @Test
+    public void _019_lineset_2() {
+        String result = pbFormatter.format(generateLinesetTestingLines(),
+                new PrettyBoxConfiguration.Builder()
+                        .setLineLevels(LineLevels.getBlockLineset())
+                        .build());
+        Assert.assertEquals(test019_2_expectedResult, result);
+        System.out.println(result);
+    }
+
+
+    // ------------------------------------------------------------------------------------- HELPERS
+
+    private List<CharSequence> generateLinesetTestingLines() {
+        List<CharSequence> lines = new ArrayList<>();
+        lines.add("Text...");
+        lines.add(LineWithLevel.LEVEL_0);
+        lines.add("Text...");
+        lines.add(LineWithLevel.LEVEL_1);
+        lines.add("Text...");
+        lines.add(LineWithLevel.LEVEL_2);
+        lines.add("Text...");
+        lines.add(LineWithLevel.LEVEL_3);
+        lines.add("Text...");
+        lines.add(LineWithLevel.LEVEL_4);
+        lines.add("Text...");
+        lines.add(LineWithLevel.LEVEL_5);
+        lines.add("Text...");
+        lines.add(new LineWithLevel(6));
+        lines.add("Text...");
+        lines.add(new LineWithLevel(7));
+        lines.add("Text...");
+        lines.add(new LineWithLevel(8));
+        lines.add("Text...");
+        return lines;
     }
 
 }
