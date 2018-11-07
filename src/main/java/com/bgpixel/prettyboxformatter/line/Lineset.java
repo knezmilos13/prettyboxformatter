@@ -48,6 +48,7 @@ public interface Lineset {
         List<LineType> lineset = new ArrayList<>();
         lineset.add(LineType.STAR);
         lineset.add(LineType.PLUS_MINUS);
+        lineset.add(LineType.DOT);
         return lineset;
     }
 

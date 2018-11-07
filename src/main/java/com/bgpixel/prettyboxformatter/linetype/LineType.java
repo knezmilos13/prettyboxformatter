@@ -17,6 +17,7 @@ public interface LineType {
     LineType LINE_DOUBLE = new BasicLineType('═', '║', '╔', '╗', '╚', '╝', '╠', '╣', '╦', '╩', '╬');
     LineType PLUS_MINUS = new SimpleLineType('-', '|', '+');
     LineType STAR = new SingleCharLineType('*');
+    LineType DOT = new SingleCharLineType('.');
     LineType SHADED_BLOCK_LIGHT = new SingleCharLineType('░');
     LineType SHADED_BLOCK_MEDIUM = new SingleCharLineType('▒');
     LineType SHADED_BLOCK_DARK = new SingleCharLineType('▓');
