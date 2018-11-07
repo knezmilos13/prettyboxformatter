@@ -68,3 +68,34 @@ For more details, see the following wiki pages:
 * [Font problems](https://github.com/knezmilos13/prettyboxformatter/wiki/Font-problems)  
 * [Examples](https://github.com/knezmilos13/prettyboxformatter/wiki/Examples)  
 * [Line types](https://github.com/knezmilos13/prettyboxformatter/wiki/Line-types)
+
+
+## Changelog
+
+##### 1.4.0
+* Add a horizontal line to content by using LineWithType
+* Define a lineset to use and add a horizontal line by referencing a LineType as defined in the 
+lineset (LineWithLevel)
+* minor - DOT LineType
+
+##### 1.3.1
+* Newline fix for logcat
+* minor - STAR LineType
+
+##### 1.3.0
+* Set border and inner line type by using LineType.
+
+##### 1.2.0
+* Separate settings for left/right/top/bottom padding & margin
+* Option not to draw any/all sides of the box
+* Add header & footer to each box with predefined metadata (e.g. timestamp, class name)
+
+##### 1.1.0 
+* Set horizontal/vertical margin/padding through PrettyBoxConfiguration
+* Set instance-level and per-call configuration. If both set, values get merged.
+* Draw boxes closed on the right side (setting)
+* Print warning for invalid configuration
+
+##### 1.0.0
+Simple initial version; no configuration, only prints LINE boxes with no padding, margin or 
+border control. No right border.
