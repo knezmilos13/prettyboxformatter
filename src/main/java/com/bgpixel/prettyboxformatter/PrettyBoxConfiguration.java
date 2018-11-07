@@ -263,7 +263,7 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** Sets LineType that will be used for box borders. */
+        /** Sets LineType that will be used for box borders. Alias for lineset[0]. */
         @NotNull
         public Builder setBorderLineType(@Nullable LineType borderLineType) {
             if(lineset == null) lineset = new ArrayList<>();
@@ -274,7 +274,8 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
-        /** Sets LineType that will be used for inner lines (i.e. separators). */
+        /** Sets LineType that will be used for inner lines (i.e. separators).
+         *  Alias for lineset[1]. */
         @NotNull
         public Builder setInnerLineType(@Nullable LineType innerLineType) {
             if(lineset == null) lineset = new ArrayList<>();
@@ -287,6 +288,10 @@ public class PrettyBoxConfiguration {
             return this;
         }
 
+        /** A list of LineType instances that will be used for border of the box (LineType at index
+         *  0) and for inner lines (indexes 1+). borderLineType setting is an alias for
+         *  lineLevels[0], while innerLineType is an alias for lineLevels[1]. Setting the lineset
+         *  will overwrite any values previously set with borderLineType or innerLineType. */
         @NotNull
         public Builder setLineset(@Nullable List<LineType> lineset) {
             this.lineset = lineset;

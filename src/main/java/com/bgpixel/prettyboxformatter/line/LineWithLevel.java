@@ -14,7 +14,9 @@ public class LineWithLevel implements CharSequence {
     @NotNull public static final LineWithLevel LEVEL_4 = new LineWithLevel(4);
     @NotNull public static final LineWithLevel LEVEL_5 = new LineWithLevel(5);
 
+    /** Alias for LEVEL_0 */
     @NotNull public static final LineWithLevel BORDER_LINE = LEVEL_0;
+    /** Alias for LEVEL_1 */
     @NotNull public static final LineWithLevel INNER_LINE = LEVEL_1;
 
     private final int level;
