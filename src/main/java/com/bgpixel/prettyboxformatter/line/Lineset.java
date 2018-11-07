@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface LineLevels {
+public interface Lineset {
 
     @NotNull
     static List<LineType> getSimpleLineLineset() {

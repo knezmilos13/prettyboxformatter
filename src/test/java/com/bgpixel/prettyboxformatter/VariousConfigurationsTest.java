@@ -1,7 +1,7 @@
 package com.bgpixel.prettyboxformatter;
 
 import com.bgpixel.prettyboxformatter.data.SimpleBoxableObject;
-import com.bgpixel.prettyboxformatter.line.LineLevels;
+import com.bgpixel.prettyboxformatter.line.Lineset;
 import com.bgpixel.prettyboxformatter.line.LineWithLevel;
 import com.bgpixel.prettyboxformatter.linetype.LineType;
 import org.junit.*;
@@ -372,7 +372,7 @@ public class VariousConfigurationsTest {
     public void _019_lineset_1() {
         String result = pbFormatter.format(generateLinesetTestingLines(),
                 new PrettyBoxConfiguration.Builder()
-                        .setLineLevels(LineLevels.getFullLineLineset())
+                        .setLineset(Lineset.getFullLineLineset())
                         .build());
         Assert.assertEquals(test019_1_expectedResult, result);
         System.out.println(result);
@@ -404,7 +404,7 @@ public class VariousConfigurationsTest {
     public void _019_lineset_2() {
         String result = pbFormatter.format(generateLinesetTestingLines(),
                 new PrettyBoxConfiguration.Builder()
-                        .setLineLevels(LineLevels.getBlockLineset())
+                        .setLineset(Lineset.getBlockLineset())
                         .build());
         Assert.assertEquals(test019_2_expectedResult, result);
         System.out.println(result);

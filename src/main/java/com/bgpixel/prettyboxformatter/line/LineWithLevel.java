@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 /** Represents an inner line of a specified level. Adding an instance of this class to an array
  *  of CharSequences prepared for drawing will draw an inner horizontal line at that position.
- *  Which LineType is used will depend on the lineLevels value set in PrettyBoxConfiguration. */
+ *  Which LineType is used will depend on the lineset value set in PrettyBoxConfiguration. */
 public class LineWithLevel implements CharSequence {
 
     @NotNull public static final LineWithLevel LEVEL_0 = new LineWithLevel(0);

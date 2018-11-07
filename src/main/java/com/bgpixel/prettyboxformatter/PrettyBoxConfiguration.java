@@ -17,7 +17,7 @@ public class PrettyBoxConfiguration {
     @Nullable private final Boolean borderRight;
     @Nullable private final Boolean borderTop;
     @Nullable private final Boolean borderBottom;
-    @Nullable private final List<LineType> lineLevels;
+    @Nullable private final List<LineType> lineset;
     @Nullable private final Integer paddingLeft;
     @Nullable private final Integer paddingRight;
     @Nullable private final Integer paddingTop;
@@ -36,7 +36,7 @@ public class PrettyBoxConfiguration {
                                    @Nullable Boolean borderRight,
                                    @Nullable Boolean borderTop,
                                    @Nullable Boolean borderBottom,
-                                   @Nullable List<LineType> lineLevels,
+                                   @Nullable List<LineType> lineset,
                                    @Nullable Integer paddingLeft,
                                    @Nullable Integer paddingRight,
                                    @Nullable Integer paddingTop,
@@ -54,7 +54,7 @@ public class PrettyBoxConfiguration {
         this.borderRight = borderRight;
         this.borderTop = borderTop;
         this.borderBottom = borderBottom;
-        this.lineLevels = lineLevels;
+        this.lineset = lineset;
         this.paddingLeft = paddingLeft;
         this.paddingRight = paddingRight;
         this.paddingTop = paddingTop;
@@ -75,12 +75,12 @@ public class PrettyBoxConfiguration {
     @Nullable public Boolean getBorderTop() { return borderTop; }
     @Nullable public Boolean getBorderBottom() { return borderBottom; }
     @NotNull public LineType getBorderLineType() {
-        return lineLevels == null || lineLevels.size() == 0? LineType.SPACE : lineLevels.get(0);
+        return lineset == null || lineset.size() == 0? LineType.SPACE : lineset.get(0);
     }
     @NotNull public LineType getInnerLineType() {
-        return lineLevels == null || lineLevels.size() <= 1? getBorderLineType() : lineLevels.get(1);
+        return lineset == null || lineset.size() <= 1? getBorderLineType() : lineset.get(1);
     }
-    @Nullable public List<LineType> getLineLevels() { return lineLevels; }
+    @Nullable public List<LineType> getLineset() { return lineset; }
     @Nullable public Integer getPaddingLeft() { return paddingLeft; }
     @Nullable public Integer getPaddingRight() { return paddingRight; }
     @Nullable public Integer getPaddingTop() { return paddingTop; }
@@ -94,10 +94,10 @@ public class PrettyBoxConfiguration {
 
     @NotNull
     public LineType getLineTypeForLevel(int lineLevel) {
-        if(lineLevel == 0 || lineLevels == null || lineLevels.size() == 0) return getBorderLineType();
+        if(lineLevel == 0 || lineset == null || lineset.size() == 0) return getBorderLineType();
         else if(lineLevel == 1) return getInnerLineType();
-        else if(lineLevel >= lineLevels.size()) return lineLevels.get(lineLevels.size() - 1);
-        else return lineLevels.get(lineLevel);
+        else if(lineLevel >= lineset.size()) return lineset.get(lineset.size() - 1);
+        else return lineset.get(lineLevel);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -110,7 +110,7 @@ public class PrettyBoxConfiguration {
         @Nullable private Boolean borderRight;
         @Nullable private Boolean borderTop;
         @Nullable private Boolean borderBottom;
-        @Nullable private List<LineType> lineLevels;
+        @Nullable private List<LineType> lineset;
         @Nullable private Integer paddingLeft;
         @Nullable private Integer paddingRight;
         @Nullable private Integer paddingTop;
@@ -165,8 +165,8 @@ public class PrettyBoxConfiguration {
                 this.borderTop = configuration.getBorderTop();
             if(configuration.getBorderBottom() != null)
                 this.borderBottom = configuration.getBorderBottom();
-            if(configuration.getLineLevels() != null)
-                this.lineLevels = configuration.getLineLevels();
+            if(configuration.getLineset() != null)
+                this.lineset = configuration.getLineset();
             if(configuration.getPaddingLeft() != null)
                 this.paddingLeft = configuration.getPaddingLeft();
             if(configuration.getPaddingRight() != null)
@@ -266,10 +266,10 @@ public class PrettyBoxConfiguration {
         /** Sets LineType that will be used for box borders. */
         @NotNull
         public Builder setBorderLineType(@Nullable LineType borderLineType) {
-            if(lineLevels == null) lineLevels = new ArrayList<>();
+            if(lineset == null) lineset = new ArrayList<>();
 
-            if(lineLevels.size() == 0) lineLevels.add(borderLineType);
-            else lineLevels.set(0, borderLineType);
+            if(lineset.size() == 0) lineset.add(borderLineType);
+            else lineset.set(0, borderLineType);
 
             return this;
         }
@@ -277,19 +277,19 @@ public class PrettyBoxConfiguration {
         /** Sets LineType that will be used for inner lines (i.e. separators). */
         @NotNull
         public Builder setInnerLineType(@Nullable LineType innerLineType) {
-            if(lineLevels == null) lineLevels = new ArrayList<>();
+            if(lineset == null) lineset = new ArrayList<>();
 
-            if(lineLevels.size() == 0) lineLevels.add(innerLineType);
+            if(lineset.size() == 0) lineset.add(innerLineType);
 
-            if(lineLevels.size() <= 1) lineLevels.add(innerLineType);
-            else lineLevels.set(1, innerLineType);
+            if(lineset.size() <= 1) lineset.add(innerLineType);
+            else lineset.set(1, innerLineType);
 
             return this;
         }
 
         @NotNull
-        public Builder setLineLevels(@Nullable List<LineType> lineLevels) {
-            this.lineLevels = lineLevels;
+        public Builder setLineset(@Nullable List<LineType> lineset) {
+            this.lineset = lineset;
             return this;
         }
 
@@ -400,7 +400,7 @@ public class PrettyBoxConfiguration {
                     charsPerLine,
                     wrapContent,
                     borderLeft, borderRight, borderTop, borderBottom,
-                    lineLevels,
+                    lineset,
                     paddingLeft, paddingRight, paddingTop, paddingBottom,
                     marginLeft, marginRight, marginTop, marginBottom,
                     headerMetadata, footerMetadata);
